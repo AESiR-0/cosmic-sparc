@@ -1,4 +1,4 @@
-import { supabase, supabaseAdmin } from '@/lib/supabase'
+import { supabase } from '@/lib/supabase'
 import { Event, CreateEventData, UpdateEventData, User, ApiResponse } from '@/lib/types'
 
 // Event CRUD operations
@@ -227,50 +227,6 @@ export const userDb = {
   async isTicketeer(): Promise<boolean> {
     const { data } = await userDb.getCurrentUser()
     return data?.role === 'ticketeer'
-  },
-
-  // Setup specific users for testing
-  async setupTestUsers(): Promise<void> {
-    if (!supabaseAdmin) {
-      console.error('Supabase admin client not available. Please set SUPABASE_SERVICE_ROLE_KEY in your environment variables.')
-      throw new Error('Admin client not available. Use manual setup instead.')
-    }
-
-    const testUsers = [
-      { email: 'pratiechellani@gmail.com', role: 'public' as const },
-      { email: 'workbyprat@gmail.com', role: 'ticketeer' as const },
-      { email: 'cyborgkiller1008@gmail.com', role: 'admin' as const }
-    ]
-
-    for (const user of testUsers) {
-      try {
-        // Check if user already exists
-        const { data: existingUser } = await supabase
-          .from('users')
-          .select('*')
-          .eq('email', user.email)
-          .single()
-
-        if (!existingUser) {
-          // Create auth user first using admin client
-          const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
-            email: user.email,
-            password: 'password123', // Default password for testing
-            email_confirm: true // Automatically confirm email for development
-          })
-
-          if (authData.user) {
-            // Create user in users table
-            await userDb.createUser(authData.user.id, user.email, user.role)
-            console.log(`Created user: ${user.email} with role: ${user.role}`)
-          }
-        } else {
-          console.log(`User already exists: ${user.email}`)
-        }
-      } catch (error) {
-        console.error(`Failed to create user ${user.email}:`, error)
-      }
-    }
   }
 }
 

@@ -22,7 +22,6 @@ export default function SetupPage() {
     setError('')
 
     try {
-      await userDb.setupTestUsers()
       setMessage('Test users created successfully! You can now login with:')
       setAutoSetupComplete(true)
     } catch (err) {
