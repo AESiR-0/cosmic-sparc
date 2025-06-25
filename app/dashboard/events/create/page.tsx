@@ -98,8 +98,17 @@ export default function CreateEventPage() {
   }
 
   const handleFieldChange = (name: string, value: any) => {
-    setFormState(prev => ({ ...prev, [name]: value }))
-  }
+    setFormState(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleNewFieldChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, type, value } = e.target;
+    if (type === 'checkbox') {
+      setNewField(prev => ({ ...prev, [name]: (e.target as HTMLInputElement).checked }));
+    } else {
+      setNewField(prev => ({ ...prev, [name]: value }));
+    }
+  };
 
   // Helper to delete image from Supabase Storage
   const deleteImageFromStorage = async (url: string) => {
@@ -250,21 +259,21 @@ export default function CreateEventPage() {
             <input
               name="name"
               value={newField.name}
-              onChange={handleFieldChange}
+              onChange={handleNewFieldChange}
               placeholder="Field Name (e.g. company)"
               className="border rounded px-2 py-1 w-32"
             />
             <input
               name="label"
               value={newField.label}
-              onChange={handleFieldChange}
+              onChange={handleNewFieldChange}
               placeholder="Label (e.g. Company Name)"
               className="border rounded px-2 py-1 w-40"
             />
             <select
               name="type"
               value={newField.type}
-              onChange={handleFieldChange}
+              onChange={handleNewFieldChange}
               className="border rounded px-2 py-1"
             >
               <option value="text">Text</option>
@@ -276,7 +285,7 @@ export default function CreateEventPage() {
                 name="required"
                 type="checkbox"
                 checked={newField.required}
-                onChange={handleFieldChange}
+                onChange={handleNewFieldChange}
               />
               Required
             </label>
