@@ -8,9 +8,21 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft, Plus, Trash2 } from 'lucide-react'
 import { eventDb, generateSlug } from '@/lib/db'
 import { supabase } from '@/lib/supabase'
+import ImageUpload from '@/components/forms/ImageUpload'
 
 export default function CreateEventPage() {
   const [loading, setLoading] = useState(false)
+  const [imageUrl, setImageUrl] = useState<string>('')
+  const [prevImageUrl, setPrevImageUrl] = useState<string>('')
+  const [formState, setFormState] = useState({
+    name: '',
+    description: '',
+    date: '',
+    venue: '',
+    ticket_price: '',
+    status: 'draft',
+  })
+  const [imageError, setImageError] = useState('')
   const router = useRouter()
 
   const formFields = [
@@ -49,6 +61,16 @@ export default function CreateEventPage() {
       placeholder: 'Enter venue name and address'
     },
     {
+      name: 'ticket_price',
+      label: 'Ticket Price (₹)',
+      type: 'number' as const,
+      required: true,
+      placeholder: 'Enter ticket price',
+      validation: {
+        min: 0
+      }
+    },
+    {
       name: 'status',
       label: 'Status',
       type: 'select' as const,
@@ -75,11 +97,49 @@ export default function CreateEventPage() {
     setFormSchema(formSchema.filter((_, i) => i !== idx))
   }
 
-  const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setNewField({ ...newField, [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value })
+  const handleFieldChange = (name: string, value: any) => {
+    setFormState(prev => ({ ...prev, [name]: value }))
   }
 
+  // Helper to delete image from Supabase Storage
+  const deleteImageFromStorage = async (url: string) => {
+    if (!url) return;
+    try {
+      // Extract path after the bucket name
+      const match = url.match(/event-images\/(.*)$/);
+      if (match && match[1]) {
+        await supabase.storage.from('event-images').remove([match[1]]);
+      }
+    } catch (err) {
+      // Ignore errors
+    }
+  };
+
+  // Handle image upload and cleanup
+  const handleImageUpload = async (newUrl: string) => {
+    if (imageUrl && imageUrl !== newUrl) {
+      await deleteImageFromStorage(imageUrl);
+    }
+    setPrevImageUrl(imageUrl);
+    setImageUrl(newUrl);
+  };
+
+  // Handle image removal
+  const handleImageRemove = async () => {
+    if (imageUrl) {
+      await deleteImageFromStorage(imageUrl);
+      setPrevImageUrl(imageUrl);
+      setImageUrl('');
+    }
+  };
+
   const handleSubmit = async (formData: Record<string, any>) => {
+    if (!imageUrl) {
+      setImageError('Event image is required.');
+      return;
+    } else {
+      setImageError('');
+    }
     try {
       setLoading(true)
 
@@ -93,15 +153,17 @@ export default function CreateEventPage() {
       // Generate slug from name
       const slug = generateSlug(formData.name)
 
-      // Create event data, include form_schema
+      // Create event data, include form_schema and image_url
       const eventData = {
         name: formData.name,
         slug,
         description: formData.description || null,
         date: formData.date,
         venue: formData.venue,
+        ticket_price: Number(formData.ticket_price),
         status: formData.status || 'draft',
-        form_schema: formSchema
+        form_schema: formSchema,
+        image_url: imageUrl || null
       }
 
       const { data, error } = await eventDb.createEvent(eventData, user.id)
@@ -140,6 +202,22 @@ export default function CreateEventPage() {
           </div>
         </div>
 
+        {/* Image Upload */}
+        <div className="mb-8">
+          <h2 className="text-lg font-bold mb-2">Event Image <span className="text-red-500">*</span></h2>
+          <ImageUpload value={imageUrl} onUpload={handleImageUpload} />
+          {imageUrl && (
+            <button
+              type="button"
+              className="mt-2 text-red-600 underline text-sm"
+              onClick={handleImageRemove}
+            >
+              Remove Image
+            </button>
+          )}
+          {imageError && <div className="text-red-600 text-sm mt-2">{imageError}</div>}
+        </div>
+
         {/* Form */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
           <FormRenderer
@@ -147,7 +225,22 @@ export default function CreateEventPage() {
             onSubmit={handleSubmit}
             submitText="Create Event"
             loading={loading}
+            formData={formState}
+            onFieldChange={handleFieldChange}
           />
+        </div>
+
+        {/* Secondary Create Event Button (Standalone) */}
+        <div className="mb-8 flex justify-center">
+          <Button
+            className="w-full max-w-xs bg-[#006D92] hover:bg-[#e28618] text-white text-lg font-semibold py-3 shadow-lg"
+            onClick={async () => {
+              await handleSubmit(formState);
+            }}
+            disabled={loading}
+          >
+            {loading ? 'Creating...' : 'Create Event'}
+          </Button>
         </div>
 
         {/* Custom Registration Fields */}

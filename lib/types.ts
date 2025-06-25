@@ -18,6 +18,8 @@ export interface Event {
   created_at: string
   updated_at: string
   form_schema?: any[]
+  image_url?: string | null
+  ticket_price?: number | null
 }
 
 export interface CreateEventData {

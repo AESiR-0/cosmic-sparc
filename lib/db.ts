@@ -10,12 +10,13 @@ export const eventDb = {
         .from('events')
         .select('*')
         .order('created_at', { ascending: false });
-      if (!includeDeleted) {
-        query = query.is('deleted_at', null);
-      }
       const { data, error } = await query;
+      let filteredData = data;
+      if (!includeDeleted && data) {
+        filteredData = data.filter((event: any) => event.deleted_at === null);
+      }
       if (error) throw error;
-      return { data, error: null, loading: false };
+      return { data: filteredData, error: null, loading: false };
     } catch (error) {
       return { 
         data: null, 
@@ -33,11 +34,11 @@ export const eventDb = {
         .select('*')
         .eq('slug', slug)
         .single();
-      if (!includeDeleted) {
-        query = query.is('deleted_at', null);
-      }
       const { data, error } = await query;
       if (error) throw error;
+      if (!includeDeleted && data && data.deleted_at !== null) {
+        return { data: null, error: null, loading: false };
+      }
       return { data, error: null, loading: false };
     } catch (error) {
       return { 
@@ -56,11 +57,11 @@ export const eventDb = {
         .select('*')
         .eq('id', id)
         .single();
-      if (!includeDeleted) {
-        query = query.is('deleted_at', null);
-      }
       const { data, error } = await query;
       if (error) throw error;
+      if (!includeDeleted && data && data.deleted_at !== null) {
+        return { data: null, error: null, loading: false };
+      }
       return { data, error: null, loading: false };
     } catch (error) {
       return { 

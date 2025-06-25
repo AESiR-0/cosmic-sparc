@@ -84,8 +84,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Dashboard'
   }
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
-    router.push('/')
+    // Instead of direct sign out, redirect to /logout page
+    router.push('/logout');
   }
 
   const navigation = [
