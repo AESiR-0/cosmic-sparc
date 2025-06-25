@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { QRCode } from 'qrcode.react';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function RegistrationConfirmationPage() {
   const { slug, ticketId } = useParams();
@@ -45,7 +45,7 @@ export default function RegistrationConfirmationPage() {
         <div className="text-lg font-mono bg-gray-100 rounded p-2 mb-4">{registration.ticket_id}</div>
         <div className="flex flex-col items-center gap-2 mb-6">
           <div className="font-semibold">Show this QR code at entry:</div>
-          <QRCode value={registration.ticket_id} size={160} />
+          <QRCodeSVG value={registration.ticket_id} size={160} />
         </div>
         <p className="text-gray-600">Show this page at the event for entry.</p>
       </div>
