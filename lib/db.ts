@@ -379,16 +379,28 @@ export const eventTicketeerDb = {
   // Get all events assigned to a ticketeer
   async getTicketeerEvents(userId: string): Promise<ApiResponse<any[]>> {
     try {
-      const { data, error } = await supabase
+      // First get the event IDs assigned to this user
+      const { data: assignments, error: assignmentError } = await supabase
         .from('event_ticketeers')
-        .select(`
-          id,
-          event:events(*)
-        `)
+        .select('event_id')
         .eq('user_id', userId);
       
-      if (error) throw error;
-      return { data: data?.map(row => row.event), error: null, loading: false };
+      if (assignmentError) throw assignmentError;
+      
+      if (!assignments || assignments.length === 0) {
+        return { data: [], error: null, loading: false };
+      }
+      
+      // Then fetch the actual events
+      const eventIds = assignments.map(a => a.event_id);
+      const { data: events, error: eventsError } = await supabase
+        .from('events')
+        .select('*')
+        .in('id', eventIds);
+      
+      if (eventsError) throw eventsError;
+      
+      return { data: events || [], error: null, loading: false };
     } catch (error) {
       return { 
         data: null, 

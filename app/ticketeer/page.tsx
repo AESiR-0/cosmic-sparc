@@ -11,6 +11,7 @@ export default function TicketeerPage() {
   const [events, setEvents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [debugInfo, setDebugInfo] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -20,32 +21,85 @@ export default function TicketeerPage() {
   const fetchAssignedEvents = async () => {
     setLoading(true);
     setError("");
-    // Get current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
-    if (userError || !user) {
-      setError("Not authenticated");
+    setDebugInfo("");
+    
+    try {
+      // Get current user
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      console.log("Auth user:", user);
+      console.log("Auth error:", userError);
+      
+      if (userError || !user) {
+        setError("Not authenticated");
+        setDebugInfo("No authenticated user found");
+        setLoading(false);
+        return;
+      }
+
+      // Check if user exists in users table
+      const { data: userData, error: userDbError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      
+      console.log("User from DB:", userData);
+      console.log("User DB error:", userDbError);
+      
+      if (userDbError) {
+        setError("User not found in database");
+        setDebugInfo(`User DB error: ${userDbError.message}`);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch events assigned to this ticketeer
+      console.log("Fetching events for user:", user.id);
+      const { data, error } = await eventTicketeerDb.getTicketeerEvents(user.id);
+      console.log("Events data:", data);
+      console.log("Events error:", error);
+      
+      // Test direct query to event_ticketeers table
+      const { data: directData, error: directError } = await supabase
+        .from('event_ticketeers')
+        .select('*')
+        .eq('user_id', user.id);
+      console.log("Direct event_ticketeers query:", directData);
+      console.log("Direct query error:", directError);
+      
+      if (error) {
+        setError(error);
+        setDebugInfo(`Events fetch error: ${error}`);
+        setLoading(false);
+        return;
+      }
+      
+      setEvents(data || []);
+      setDebugInfo(`Found ${data?.length || 0} events. Direct query found ${directData?.length || 0} assignments.`);
       setLoading(false);
-      return;
-    }
-    // Fetch events assigned to this ticketeer
-    const { data, error } = await eventTicketeerDb.getTicketeerEvents(user.id);
-    if (error) {
-      setError(error);
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setError("Unexpected error occurred");
+      setDebugInfo(`Unexpected error: ${err}`);
       setLoading(false);
-      return;
     }
-    setEvents(data || []);
-    setLoading(false);
   };
 
   if (loading) return <div className="text-center py-12">Loading...</div>;
-  if (error) return <div className="text-center text-red-600 py-12">{error}</div>;
-
+  
   return (
     <AdminLayout title="Ticketeer Dashboard">
       <div className="max-w-2xl mx-auto py-6 px-2">
         <h1 className="text-2xl font-bold mb-4">Assigned Events</h1>
-        {events.length === 0 ? (
+        
+        {error && (
+          <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-4">
+            <div className="text-red-800 font-semibold">Error: {error}</div>
+            {debugInfo && <div className="text-red-600 text-sm mt-1">{debugInfo}</div>}
+          </div>
+        )}
+        
+        {events.length === 0 && !error ? (
           <div className="text-gray-500">No events assigned yet.</div>
         ) : (
           <div className="space-y-4">
@@ -69,6 +123,12 @@ export default function TicketeerPage() {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+        
+        {debugInfo && !error && (
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+            Debug: {debugInfo}
           </div>
         )}
       </div>
