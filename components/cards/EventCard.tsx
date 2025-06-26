@@ -64,7 +64,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => onView(event)}
-                className="h-8 px-2"
+                className="h-8 px-2 bg-[#006D92] text-white hover:bg-[#EF7B45]"
               >
                 <Eye className="w-4 h-4" />
               </Button>
@@ -74,7 +74,7 @@ const EventCard: React.FC<EventCardProps> = ({
                 variant="ghost"
                 size="sm"
                 onClick={() => onEdit(event)}
-                className="h-8 px-2"
+                className="h-8 px-2 bg-[#006D92] text-white hover:bg-[#EF7B45]"
               >
                 <Edit className="w-4 h-4" />
               </Button>
@@ -132,7 +132,7 @@ const EventCard: React.FC<EventCardProps> = ({
               variant="outline"
               size="sm"
               onClick={() => onView(event)}
-              className="flex-1"
+              className="flex-1 bg-[#006D92] text-white hover:bg-[#EF7B45]"
             >
               <Eye className="w-4 h-4 mr-2" />
               View
@@ -143,7 +143,7 @@ const EventCard: React.FC<EventCardProps> = ({
               variant="outline"
               size="sm"
               onClick={() => onEdit(event)}
-              className="flex-1"
+              className="flex-1 bg-[#006D92] text-white hover:bg-[#EF7B45]"
             >
               <Edit className="w-4 h-4 mr-2" />
               Edit
@@ -154,7 +154,7 @@ const EventCard: React.FC<EventCardProps> = ({
               variant="destructive"
               size="sm"
               onClick={() => onDelete(event.id)}
-              className="flex-1"
+              className="flex-1 bg-[#006D92] text-white hover:bg-[#EF7B45]"
             >
               <Trash2 className="w-4 h-4 mr-2" />
               Delete

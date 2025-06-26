@@ -77,7 +77,7 @@ export default function ConfirmEmailPage() {
                             Your email has been successfully confirmed. You'll be redirected to the login page shortly.
                         </p>
                         <Link href="/login">
-                            <Button className="bg-[#006D92] hover:bg-[#e28618]">
+                            <Button className="bg-[#006D92] hover:bg-[#EF7B45] text-white">
                                 Go to Login
                             </Button>
                         </Link>
@@ -98,12 +98,12 @@ export default function ConfirmEmailPage() {
                     <p className="text-gray-600 mb-6">{error}</p>
                     <div className="space-y-3">
                         <Link href="/login">
-                            <Button className="w-full bg-[#006D92] hover:bg-[#e28618]">
+                            <Button className="bg-[#006D92] hover:bg-[#EF7B45] text-white">
                                 Go to Login
                             </Button>
                         </Link>
                         <Link href="/signup">
-                            <Button variant="outline" className="w-full">
+                            <Button variant="outline" className="bg-[#E28618] text-white">
                                 Try Signing Up Again
                             </Button>
                         </Link>

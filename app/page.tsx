@@ -113,7 +113,7 @@ export default function HomePage() {
   };
 
   return (
-    <main className="w-full min-h-screen bg-gradient-to-br from-blue-50 via-orange-50 to-blue-100 px-0 py-0">
+    <main className="w-full min-h-screen bg-gradient-to-br from-[#006D92] via-[#BDEDE0] to-[#E28618] px-0 py-0">
       {/* Hero Section */}
       <section className="relative w-full h-[340px] md:h-[420px] flex items-center justify-center bg-blue-900">
         <img
@@ -125,7 +125,23 @@ export default function HomePage() {
         <div className="relative z-10 text-center text-white px-4">
           <h1 className="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-lg">Discover Amazing Events Near You</h1>
           <p className="text-lg md:text-2xl mb-6 font-medium drop-shadow">Concerts, workshops, meetups, and more. Find your next experience.</p>
-          <Link href="#events" className="inline-block bg-orange-500 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-lg text-lg shadow transition">Browse Events</Link>
+          {/* Search & Filters */}
+          <section className="max-w-4xl mx-auto px-4  relative z-20">
+            <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row items-center gap-4 border border-blue-100">
+              <div className="flex-1 w-full flex items-center gap-2">
+                <Search className="w-5 h-5 text-blue-400" />
+                <input
+                  type="text"
+                  placeholder="Search events, venues, or keywords..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                  className="w-full border-none outline-none bg-transparent text-lg px-2 text-blue-900"
+                />
+              </div>
+              {/* Future: Add category/date filters here */}
+            </div>
+          </section>
+          <Link href="#events" className="inline-block mt-10 bg-[#f76e2f] hover:bg-[#006D92] text-white font-semibold px-8 py-3 rounded-lg text-lg shadow transition">Browse Events</Link>
         </div>
       </section>
 
@@ -161,7 +177,7 @@ export default function HomePage() {
                   </div>
                   <Link
                     href={`/events/${event.slug}`}
-                    className="mt-auto inline-block w-full bg-blue-600 hover:bg-orange-500 text-white font-semibold px-4 py-2 rounded-lg text-center transition"
+                    className="mt-auto inline-block w-full bg-[#006D92] hover:bg-[#EF7B45] text-white font-semibold px-4 py-2 rounded-lg text-center transition"
                   >
                     View Event
                   </Link>
@@ -227,22 +243,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Search & Filters */}
-      <section className="max-w-4xl mx-auto px-4 -mt-12 relative z-20">
-        <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row items-center gap-4 border border-blue-100">
-          <div className="flex-1 w-full flex items-center gap-2">
-            <Search className="w-5 h-5 text-blue-400" />
-            <input
-              type="text"
-              placeholder="Search events, venues, or keywords..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full border-none outline-none bg-transparent text-lg px-2 text-blue-900"
-            />
-          </div>
-          {/* Future: Add category/date filters here */}
-        </div>
-      </section>
+
 
       {/* Events Grid */}
       <section id="events" className="max-w-7xl mx-auto px-4 py-16">
@@ -264,23 +265,23 @@ export default function HomePage() {
                   />
                 </div>
                 <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="text-xl font-bold mb-1 text-blue-900 line-clamp-1">{event.name}</h3>
-                  <div className="flex items-center gap-2 text-blue-700 text-sm mb-1">
+                  <h3 className="text-xl font-bold mb-1 text-[#006D92] line-clamp-1">{event.name}</h3>
+                  <div className="flex items-center gap-2 text-[#006D92] text-sm mb-1">
                     <Calendar className="w-4 h-4 text-orange-500" />
                     <span>{dateStr} {timeStr && `• ${timeStr}`}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-blue-700 text-sm mb-1">
-                    <MapPin className="w-4 h-4 text-blue-400" />
+                  <div className="flex items-center gap-2 text-[#006D92] text-sm mb-1">
+                    <MapPin className="w-4 h-4 text-[#006D92]" />
                     <span className="line-clamp-1">{event.venue}</span>
                   </div>
                   <div className="flex items-center gap-2 text-orange-700 font-semibold text-sm mb-2">
                     <Ticket className="w-4 h-4 text-orange-500" />
                     <span>₹{event.ticket_price}</span>
                   </div>
-                  <p className="text-blue-700 text-sm mb-4 line-clamp-2 flex-1">{event.description}</p>
+                  <p className="text-[#006D92] text-sm mb-4 line-clamp-2 flex-1">{event.description}</p>
                   <Link
                     href={`/events/${event.slug}`}
-                    className="mt-auto inline-block w-full bg-orange-500 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg text-center transition"
+                    className="mt-auto inline-block w-full bg-[#006D92] hover:bg-[#EF7B45] text-white font-semibold px-4 py-2 rounded-lg text-center transition"
                   >
                     View Event
                   </Link>
@@ -290,16 +291,16 @@ export default function HomePage() {
           })}
         </div>
         {!loading && filteredEvents.length === 0 && (
-          <div className="text-center text-blue-400 mt-12">No events found.</div>
+          <div className="text-center text-[#1d375e] mt-12">No events found.</div>
         )}
       </section>
 
       {/* Call to Action */}
-      <section className="w-full bg-gradient-to-r from-blue-700 to-orange-500 py-16 mt-8">
+      <section className="w-full bg-gradient-to-r from-[#006D92] to-[#EF7B45] py-16 mt-8">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to create your own event?</h2>
           <p className="text-lg text-white mb-6">Join hundreds of organizers using Cosmic Sparc to host amazing experiences.</p>
-          <Link href="/dashboard/events/create" className="inline-block bg-white text-blue-700 hover:bg-orange-100 font-semibold px-8 py-3 rounded-lg text-lg shadow transition">Create Event</Link>
+          <Link href="/dashboard/events/create" className="inline-block bg-white text-[#1d375e] hover:bg-orange-100 font-semibold px-8 py-3 rounded-lg text-lg shadow transition">Create Event</Link>
         </div>
       </section>
     </main>

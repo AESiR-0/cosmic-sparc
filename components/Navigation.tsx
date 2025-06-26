@@ -40,7 +40,7 @@ export default function Navigation({ showUserMenu = false, userName = "John Doe"
           ) : (
             <>
               <Button variant="outline" className="border-gray-300">Sign In</Button>
-              <Button className="bg-[#006D92] hover:bg-[#e28618]">Get Started</Button>
+              <Button className="bg-[#006D92] hover:bg-[#EF7B45]">Get Started</Button>
             </>
           )}
         </div>
