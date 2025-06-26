@@ -21,6 +21,7 @@ export default function CreateEventPage() {
     venue: '',
     ticket_price: '',
     status: 'draft',
+    category: '',
   })
   const [imageError, setImageError] = useState('')
   const router = useRouter()
@@ -80,6 +81,32 @@ export default function CreateEventPage() {
         { value: 'published', label: 'Published' },
         { value: 'cancelled', label: 'Cancelled' }
       ]
+    },
+    {
+      name: 'category',
+      label: 'Category',
+      type: 'select' as const,
+      required: true,
+      options: [
+        { value: 'Music & Concerts', label: 'Music & Concerts' },
+        { value: 'Arts & Culture', label: 'Arts & Culture' },
+        { value: 'Business & Networking', label: 'Business & Networking' },
+        { value: 'Technology', label: 'Technology' },
+        { value: 'Health & Wellness', label: 'Health & Wellness' },
+        { value: 'Sports & Fitness', label: 'Sports & Fitness' },
+        { value: 'Food & Drink', label: 'Food & Drink' },
+        { value: 'Education & Training', label: 'Education & Training' },
+        { value: 'Festivals & Fairs', label: 'Festivals & Fairs' },
+        { value: 'Charity & Causes', label: 'Charity & Causes' },
+        { value: 'Family & Kids', label: 'Family & Kids' },
+        { value: 'Fashion & Beauty', label: 'Fashion & Beauty' },
+        { value: 'Travel & Outdoor', label: 'Travel & Outdoor' },
+        { value: 'Science & Engineering', label: 'Science & Engineering' },
+        { value: 'Spirituality', label: 'Spirituality' },
+        { value: 'Community', label: 'Community' },
+        { value: 'Online Events', label: 'Online Events' },
+        { value: 'Other', label: 'Other' }
+      ]
     }
   ]
 
@@ -98,7 +125,7 @@ export default function CreateEventPage() {
   }
 
   const handleFieldChange = (name: string, value: any) => {
-    setFormState(prev => ({ ...prev, [name]: value }));
+    setNewField(prev => ({ ...prev, [name]: value }));
   };
 
   const handleNewFieldChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -171,6 +198,7 @@ export default function CreateEventPage() {
         venue: formData.venue,
         ticket_price: Number(formData.ticket_price),
         status: formData.status || 'draft',
+        category: formData.category || null,
         form_schema: formSchema,
         image_url: imageUrl || null
       }
@@ -178,6 +206,7 @@ export default function CreateEventPage() {
       const { data, error } = await eventDb.createEvent(eventData, user.id)
 
       if (error) {
+        console.error('Supabase createEvent error:', error);
         alert('Failed to create event: ' + error)
         return
       }
@@ -259,21 +288,21 @@ export default function CreateEventPage() {
             <input
               name="name"
               value={newField.name}
-              onChange={handleNewFieldChange}
+              onChange={e => handleFieldChange(e.target.name, e.target.type === 'checkbox' ? e.target.checked : e.target.value)}
               placeholder="Field Name (e.g. company)"
               className="border rounded px-2 py-1 w-32"
             />
             <input
               name="label"
               value={newField.label}
-              onChange={handleNewFieldChange}
+              onChange={e => handleFieldChange(e.target.name, e.target.type === 'checkbox' ? e.target.checked : e.target.value)}
               placeholder="Label (e.g. Company Name)"
               className="border rounded px-2 py-1 w-40"
             />
             <select
               name="type"
               value={newField.type}
-              onChange={handleNewFieldChange}
+              onChange={e => handleFieldChange(e.target.name, e.target.value)}
               className="border rounded px-2 py-1"
             >
               <option value="text">Text</option>
@@ -285,7 +314,7 @@ export default function CreateEventPage() {
                 name="required"
                 type="checkbox"
                 checked={newField.required}
-                onChange={handleNewFieldChange}
+                onChange={e => handleFieldChange(e.target.name, e.target.checked)}
               />
               Required
             </label>

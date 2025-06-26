@@ -72,6 +72,7 @@ export type Database = {
           description?: string | null
           date: string
           venue: string
+          category: string
           status?: 'draft' | 'published' | 'cancelled'
           created_by: string
           created_at?: string
@@ -86,6 +87,7 @@ export type Database = {
           description?: string | null
           date?: string
           venue?: string
+          category?: string
           status?: 'draft' | 'published' | 'cancelled'
           created_by?: string
           created_at?: string

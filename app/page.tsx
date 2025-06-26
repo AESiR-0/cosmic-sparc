@@ -147,6 +147,19 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Categories */}
+      <section className="max-w-7xl mx-auto px-4 py-12">
+        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[#006D92] text-center">Popular Categories</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
+          {CATEGORIES.map(cat => (
+            <div key={cat.name} className={`flex flex-col items-center justify-center rounded-xl p-6 shadow bg-white hover:shadow-lg transition border border-blue-100 ${cat.color}`}>
+              {cat.icon}
+              <span className="mt-2 font-semibold text-[#006D92] text-lg">{cat.name}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* Featured Events */}
       <section className="max-w-7xl mx-auto px-4 py-12">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[#006D92] text-center">Featured Events</h2>
@@ -192,19 +205,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Categories */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[#006D92] text-center">Popular Categories</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
-          {CATEGORIES.map(cat => (
-            <div key={cat.name} className={`flex flex-col items-center justify-center rounded-xl p-6 shadow bg-white hover:shadow-lg transition border border-blue-100 ${cat.color}`}>
-              {cat.icon}
-              <span className="mt-2 font-semibold text-[#006D92] text-lg">{cat.name}</span>
-            </div>
-          ))}
-        </div>
-      </section>
-
       {/* How It Works */}
       <section className="max-w-5xl mx-auto px-4 py-12">
         <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[#006D92] text-center">How It Works</h2>
@@ -247,8 +247,6 @@ export default function HomePage() {
         </div>
       </section>
 
-
-
       {/* Events Grid */}
       <section id="events" className="max-w-7xl mx-auto px-4 py-16">
         <h2 className="text-3xl font-bold mb-8 text-center text-[#006D92]">Upcoming Events</h2>
@@ -265,6 +263,8 @@ export default function HomePage() {
                   <Image
                     src={event.image_url || PLACEHOLDER_IMAGE}
                     alt={event.name}
+                    width={1000}
+                    height={1000}
                     className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
                   />
                 </div>

@@ -20,6 +20,7 @@ export interface Event {
   form_schema?: any[]
   image_url?: string | null
   ticket_price?: number | null
+  category: string
 }
 
 export interface CreateEventData {
@@ -30,6 +31,7 @@ export interface CreateEventData {
   venue: string
   status?: 'draft' | 'published' | 'cancelled'
   form_schema?: any[]
+  category: string
 }
 
 export interface UpdateEventData {
@@ -40,6 +42,7 @@ export interface UpdateEventData {
   venue?: string
   status?: 'draft' | 'published' | 'cancelled'
   form_schema?: any[]
+  category?: string
 }
 
 export type UserRole = User['role']

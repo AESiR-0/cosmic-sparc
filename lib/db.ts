@@ -90,9 +90,20 @@ export const eventDb = {
 
       return { data, error: null, loading: false }
     } catch (error) {
+      console.error('Supabase createEvent error (full object):', error);
+      let errorMsg = 'Failed to create event';
+      if (error && typeof error === 'object') {
+        if ('message' in error && typeof (error as any).message === 'string') {
+          errorMsg = (error as any).message;
+        } else if ('msg' in error && typeof (error as any).msg === 'string') {
+          errorMsg = (error as any).msg;
+        } else if (error instanceof Error) {
+          errorMsg = error.message;
+        }
+      }
       return { 
         data: null, 
-        error: error instanceof Error ? error.message : 'Failed to create event', 
+        error: errorMsg, 
         loading: false 
       }
     }

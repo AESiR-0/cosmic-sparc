@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const { data, error } = await supabase
       .from('registrations')
       .insert({
-        event_id: eventId,
+        event_id: parseInt(eventId),
         user_id: userId || null,
         name,
         email,

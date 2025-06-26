@@ -135,8 +135,8 @@ export default function EditEventPage() {
     setFormSchema(formSchema.filter((_, i) => i !== idx));
   };
 
-  const handleFieldChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setNewField({ ...newField, [e.target.name]: e.target.type === 'checkbox' ? e.target.checked : e.target.value });
+  const handleFieldChange = (name: string, value: any) => {
+    setNewField(prev => ({ ...prev, [name]: value }));
   };
 
   if (initialLoading) {
@@ -211,21 +211,21 @@ export default function EditEventPage() {
             <input
               name="name"
               value={newField.name}
-              onChange={handleFieldChange}
+              onChange={e => handleFieldChange(e.target.name, e.target.type === 'checkbox' ? e.target.checked : e.target.value)}
               placeholder="Field Name (e.g. company)"
               className="border rounded px-2 py-1 w-32"
             />
             <input
               name="label"
               value={newField.label}
-              onChange={handleFieldChange}
+              onChange={e => handleFieldChange(e.target.name, e.target.type === 'checkbox' ? e.target.checked : e.target.value)}
               placeholder="Label (e.g. Company Name)"
               className="border rounded px-2 py-1 w-40"
             />
             <select
               name="type"
               value={newField.type}
-              onChange={handleFieldChange}
+              onChange={e => handleFieldChange(e.target.name, e.target.value)}
               className="border rounded px-2 py-1"
             >
               <option value="text">Text</option>
@@ -237,7 +237,7 @@ export default function EditEventPage() {
                 name="required"
                 type="checkbox"
                 checked={newField.required}
-                onChange={handleFieldChange}
+                onChange={e => handleFieldChange(e.target.name, e.target.checked)}
               />
               Required
             </label>

@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-
+import Image from 'next/image';
 interface ImageUploadProps {
   value?: string;
   onUpload: (url: string) => void;
@@ -58,7 +58,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onUpload, bucket = DEF
       onDragOver={e => e.preventDefault()}
     >
       {preview ? (
-        <Image src={preview} alt="Event" className="mx-auto mb-2 rounded-lg max-h-48 object-contain" />
+        <Image src={preview} alt="Event" width={1000} height={1000} className="mx-auto mb-2 rounded-lg max-h-48 object-contain" />
       ) : (
         <>
           <div className="text-gray-400 mb-2">Drag & drop or click to upload</div>
