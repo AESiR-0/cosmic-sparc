@@ -6,14 +6,16 @@ export const eventDb = {
   // Get all events for admin (exclude soft-deleted by default)
   async getAllEvents(includeDeleted = false): Promise<ApiResponse<Event[]>> {
     try {
+      let user = await userDb.getCurrentUser();
       let query = supabase
         .from('events')
         .select('*')
+        .eq('created_by', user.data?.id)
         .order('created_at', { ascending: false });
       const { data, error } = await query;
       let filteredData = data;
       if (!includeDeleted && data) {
-        filteredData = data.filter((event: any) => event.deleted_at === null);
+        filteredData = data.filter((event: any) => !('deleted_at' in event) || event.deleted_at === null);
       }
       if (error) throw error;
       return { data: filteredData, error: null, loading: false };

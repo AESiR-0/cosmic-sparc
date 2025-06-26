@@ -12,7 +12,7 @@ export async function POST(req: NextRequest) {
     const { data, error } = await supabase
       .from('registrations')
       .insert({
-        event_id: parseInt(eventId),
+        event_id: eventId,
         user_id: userId || null,
         name,
         email,
@@ -24,10 +24,22 @@ export async function POST(req: NextRequest) {
       })
       .select()
       .single();
-    if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error) {
+      console.error('Registration insert error:', error);
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
 
-    // Send notifications (email/WhatsApp)
-    await sendRegistrationNotifications(data, event);
+    // Fetch the event from the database for notifications
+    const { data: eventData, error: eventError } = await supabase
+      .from('events')
+      .select('*')
+      .eq('id', eventId)
+      .single();
+    if (eventError) {
+      console.error('Event fetch error for notification:', eventError);
+      return NextResponse.json({ error: eventError.message }, { status: 400 });
+    }
+    await sendRegistrationNotifications(data, eventData);
 
     return NextResponse.json({ success: true, ticketId, registration: data });
   } catch (err) {

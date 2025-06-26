@@ -125,7 +125,7 @@ export default function CreateEventPage() {
   }
 
   const handleFieldChange = (name: string, value: any) => {
-    setNewField(prev => ({ ...prev, [name]: value }));
+    setFormState(prev => ({ ...prev, [name]: value }));
   };
 
   const handleNewFieldChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

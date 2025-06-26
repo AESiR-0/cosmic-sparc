@@ -12,10 +12,20 @@ export default function PublicEventPage() {
   const [event, setEvent] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [dateStr, setDateStr] = useState('');
+  const [timeStr, setTimeStr] = useState('');
 
   useEffect(() => {
     fetchEvent();
   }, [slug]);
+
+  useEffect(() => {
+    if (event?.date) {
+      const dateObj = new Date(event.date);
+      setDateStr(dateObj.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }));
+      setTimeStr(dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }));
+    }
+  }, [event?.date]);
 
   const fetchEvent = async () => {
     setLoading(true);
@@ -37,11 +47,6 @@ export default function PublicEventPage() {
 
   if (loading) return <div className="text-center py-12">Loading event...</div>;
   if (error || !event) return <div className="text-center text-red-600 py-12">{error || 'Event not found.'}</div>;
-
-  // Format date and time
-  const dateObj = event.date ? new Date(event.date) : null;
-  const dateStr = dateObj ? dateObj.toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : '';
-  const timeStr = dateObj ? dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : '';
 
   return (
     <main className="w-full min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-orange-50/30 px-0 py-0">

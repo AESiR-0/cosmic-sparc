@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { ArrowLeft, Save, Plus, Trash2 } from 'lucide-react'
 import { eventDb } from '@/lib/db'
 import { Event } from '@/lib/types'
+import AssignTicketeers from '@/components/AssignTicketeers'
 
 export default function EditEventPage() {
   const [loading, setLoading] = useState(false)
@@ -259,6 +260,12 @@ export default function EditEventPage() {
             </div>
           )}
           {formSchema.length === 0 && <div className="text-gray-500">No custom fields added yet.</div>}
+        </div>
+
+        {/* Ticketeer Assignment */}
+        <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
+          <h2 className="text-lg font-bold mb-4">Assign Ticketeers</h2>
+          <AssignTicketeers eventId={event.id} />
         </div>
 
         {/* Event Info */}
