@@ -32,7 +32,7 @@ export default function EditEventPage() {
 
   const fetchEvent = async () => {
     try {
-      const { data, error } = await eventDb.getEventById(eventId)
+      const { data, error } = await eventDb.getEventById(eventId, true)
       
       if (error) {
         alert('Failed to fetch event: ' + error)
@@ -140,6 +140,15 @@ export default function EditEventPage() {
     setNewField(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleFieldChangeEvent = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, type, value } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
+    setNewField(prev => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }));
+  };
+
   if (initialLoading) {
     return (
       <AdminLayout title="Edit Event">
@@ -212,21 +221,21 @@ export default function EditEventPage() {
             <input
               name="name"
               value={newField.name}
-              onChange={e => handleFieldChange(e.target.name, e.target.type === 'checkbox' ? e.target.checked : e.target.value)}
+              onChange={handleFieldChangeEvent}
               placeholder="Field Name (e.g. company)"
               className="border rounded px-2 py-1 w-32"
             />
             <input
               name="label"
               value={newField.label}
-              onChange={e => handleFieldChange(e.target.name, e.target.type === 'checkbox' ? e.target.checked : e.target.value)}
+              onChange={handleFieldChangeEvent}
               placeholder="Label (e.g. Company Name)"
               className="border rounded px-2 py-1 w-40"
             />
             <select
               name="type"
               value={newField.type}
-              onChange={e => handleFieldChange(e.target.name, e.target.value)}
+              onChange={handleFieldChangeEvent}
               className="border rounded px-2 py-1"
             >
               <option value="text">Text</option>
@@ -238,7 +247,7 @@ export default function EditEventPage() {
                 name="required"
                 type="checkbox"
                 checked={newField.required}
-                onChange={e => handleFieldChange(e.target.name, e.target.checked)}
+                onChange={handleFieldChangeEvent}
               />
               Required
             </label>

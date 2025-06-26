@@ -269,4 +269,132 @@ export const formatDateTime = (dateString: string): string => {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+// Event Ticketeer operations
+export const eventTicketeerDb = {
+  // Get all ticketeers for an event
+  async getEventTicketeers(eventId: string): Promise<ApiResponse<any[]>> {
+    try {
+      const { data, error } = await supabase
+        .from('event_ticketeers')
+        .select(`
+          id,
+          user:users(id, email, role)
+        `)
+        .eq('event_id', eventId);
+      
+      if (error) throw error;
+      return { data, error: null, loading: false };
+    } catch (error) {
+      return { 
+        data: null, 
+        error: error instanceof Error ? error.message : 'Failed to fetch event ticketeers', 
+        loading: false 
+      };
+    }
+  },
+
+  // Assign a ticketeer to an event
+  async assignTicketeer(eventId: string, userEmail: string): Promise<ApiResponse<any>> {
+    try {
+      // First check if user exists
+      let { data: user, error: userError } = await supabase
+        .from('users')
+        .select('id')
+        .eq('email', userEmail)
+        .single();
+      
+      if (userError && userError.code !== 'PGRST116') {
+        throw userError;
+      }
+      
+      // If user doesn't exist, create them
+      if (!user) {
+        const { data: newUser, error: createError } = await supabase
+          .from('users')
+          .insert({ email: userEmail, role: 'ticketeer' })
+          .select()
+          .single();
+        
+        if (createError) throw createError;
+        user = newUser;
+      }
+      
+      // Check if already assigned
+      const { data: existing, error: checkError } = await supabase
+        .from('event_ticketeers')
+        .select('id')
+        .eq('event_id', eventId)
+        .eq('user_id', user!.id)
+        .single();
+      
+      if (existing) {
+        return { data: existing, error: null, loading: false };
+      }
+      
+      // Assign ticketeer
+      const { data, error } = await supabase
+        .from('event_ticketeers')
+        .insert({
+          event_id: eventId,
+          user_id: user!.id
+        })
+        .select(`
+          id,
+          user:users(id, email, role)
+        `)
+        .single();
+      
+      if (error) throw error;
+      return { data, error: null, loading: false };
+    } catch (error) {
+      return { 
+        data: null, 
+        error: error instanceof Error ? error.message : 'Failed to assign ticketeer', 
+        loading: false 
+      };
+    }
+  },
+
+  // Remove a ticketeer from an event
+  async removeTicketeer(assignmentId: string): Promise<ApiResponse<boolean>> {
+    try {
+      const { error } = await supabase
+        .from('event_ticketeers')
+        .delete()
+        .eq('id', assignmentId);
+      
+      if (error) throw error;
+      return { data: true, error: null, loading: false };
+    } catch (error) {
+      return { 
+        data: null, 
+        error: error instanceof Error ? error.message : 'Failed to remove ticketeer', 
+        loading: false 
+      };
+    }
+  },
+
+  // Get all events assigned to a ticketeer
+  async getTicketeerEvents(userId: string): Promise<ApiResponse<any[]>> {
+    try {
+      const { data, error } = await supabase
+        .from('event_ticketeers')
+        .select(`
+          id,
+          event:events(*)
+        `)
+        .eq('user_id', userId);
+      
+      if (error) throw error;
+      return { data: data?.map(row => row.event), error: null, loading: false };
+    } catch (error) {
+      return { 
+        data: null, 
+        error: error instanceof Error ? error.message : 'Failed to fetch ticketeer events', 
+        loading: false 
+      };
+    }
+  }
 } 

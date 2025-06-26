@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
+import { eventTicketeerDb } from "@/lib/db";
 import AdminLayout from "@/components/layout/AdminLayout";
 import { Calendar, MapPin, Ticket } from "lucide-react";
 
@@ -27,16 +28,13 @@ export default function TicketeerPage() {
       return;
     }
     // Fetch events assigned to this ticketeer
-    const { data, error } = await supabase
-      .from("event_ticketeers")
-      .select("event:events(*)")
-      .eq("user_id", user.id);
+    const { data, error } = await eventTicketeerDb.getTicketeerEvents(user.id);
     if (error) {
-      setError(error.message);
+      setError(error);
       setLoading(false);
       return;
     }
-    setEvents(data.map((row: any) => row.event));
+    setEvents(data || []);
     setLoading(false);
   };
 

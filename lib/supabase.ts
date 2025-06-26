@@ -96,10 +96,70 @@ export type Database = {
           deleted_at?: string | null
         }
       }
+      event_ticketeers: {
+        Row: {
+          id: string
+          event_id: string
+          user_id: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          event_id: string
+          user_id: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          event_id?: string
+          user_id?: string
+          created_at?: string
+        }
+      }
+      registrations: {
+        Row: {
+          id: string
+          event_id: string
+          user_id: string | null
+          name: string
+          email: string
+          phone: string | null
+          form_data: any
+          ticket_id: string
+          status: 'registered' | 'entered'
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          event_id: string
+          user_id?: string | null
+          name: string
+          email: string
+          phone?: string | null
+          form_data?: any
+          ticket_id: string
+          status?: 'registered' | 'entered'
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          event_id?: string
+          user_id?: string | null
+          name?: string
+          email?: string
+          phone?: string | null
+          form_data?: any
+          ticket_id?: string
+          status?: 'registered' | 'entered'
+          created_at?: string
+        }
+      }
     }
   }
 }
 
 export type User = Database['public']['Tables']['users']['Row']
 export type Event = Database['public']['Tables']['events']['Row']
+export type EventTicketeer = Database['public']['Tables']['event_ticketeers']['Row']
+export type Registration = Database['public']['Tables']['registrations']['Row']
 export type UserRole = User['role'] 

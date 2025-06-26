@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabase";
+import { eventTicketeerDb } from "@/lib/db";
 import { Button } from "@/components/ui/button";
 
 interface AssignTicketeersProps {
@@ -22,11 +22,8 @@ export default function AssignTicketeers({ eventId }: AssignTicketeersProps) {
   const fetchTicketeers = async () => {
     setLoading(true);
     setError("");
-    const { data, error } = await supabase
-      .from("event_ticketeers")
-      .select("id, user:users(email, id)")
-      .eq("event_id", eventId);
-    if (error) setError(error.message);
+    const { data, error } = await eventTicketeerDb.getEventTicketeers(eventId);
+    if (error) setError(error);
     else setTicketeers(data || []);
     setLoading(false);
   };
@@ -36,31 +33,8 @@ export default function AssignTicketeers({ eventId }: AssignTicketeersProps) {
     setLoading(true);
     setError("");
     setSuccess("");
-    // Check if user exists
-    let { data: user, error: userError } = await supabase
-      .from("users")
-      .select("id")
-      .eq("email", email)
-      .single();
-    if (!user) {
-      // Auto-create user (email only, role ticketeer)
-      const { data: newUser, error: createUserError } = await supabase
-        .from("users")
-        .insert({ email, role: "ticketeer" })
-        .select()
-        .single();
-      if (createUserError) {
-        setError("Failed to create user: " + createUserError.message);
-        setLoading(false);
-        return;
-      }
-      user = newUser;
-    }
-    // Assign ticketeer
-    const { error: assignError } = await supabase
-      .from("event_ticketeers")
-      .insert({ event_id: eventId, user_id: user?.id });
-    if (assignError) setError(assignError.message);
+    const { data, error } = await eventTicketeerDb.assignTicketeer(eventId, email);
+    if (error) setError(error);
     else {
       setSuccess("Ticketeer assigned!");
       setEmail("");
@@ -73,11 +47,8 @@ export default function AssignTicketeers({ eventId }: AssignTicketeersProps) {
     setLoading(true);
     setError("");
     setSuccess("");
-    const { error } = await supabase
-      .from("event_ticketeers")
-      .delete()
-      .eq("id", ticketeerId);
-    if (error) setError(error.message);
+    const { error } = await eventTicketeerDb.removeTicketeer(ticketeerId);
+    if (error) setError(error);
     else {
       setSuccess("Ticketeer removed.");
       fetchTicketeers();
