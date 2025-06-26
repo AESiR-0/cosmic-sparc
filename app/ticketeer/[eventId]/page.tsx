@@ -6,11 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { Calendar, MapPin, Ticket, CheckCircle, QrCode } from "lucide-react";
 import dynamic from "next/dynamic";
 
-// Dynamically import react-qr-reader to avoid SSR issues
-const QrReader = dynamic(
-  () => import("react-qr-reader").then(mod => mod.QrReader),
-  { ssr: false }
-);
+const QrBarcodeScanner = dynamic(() => import("react-qr-barcode-scanner"), { ssr: false });
 
 export default function TicketeerEventPage() {
   const { eventId } = useParams();
@@ -111,11 +107,10 @@ export default function TicketeerEventPage() {
         <div className="w-full flex flex-col items-center">
           <QrCode className="w-10 h-10 text-gray-400 mb-2" />
           <div className="w-full max-w-xs">
-            <QrReader
-              constraints={{ facingMode: "environment" }}
-              onResult={(result, error) => {
-                if (result?.getText()) handleScan(result.getText());
-                if (error) handleError(error);
+            <QrBarcodeScanner
+              onUpdate={(err, result) => {
+                if (result) handleScan(result.getText());
+                if (err) handleError(err);
               }}
             />
           </div>
