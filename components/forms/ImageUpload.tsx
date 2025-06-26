@@ -58,7 +58,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onUpload, bucket = DEF
       onDragOver={e => e.preventDefault()}
     >
       {preview ? (
-        <img src={preview} alt="Event" className="mx-auto mb-2 rounded-lg max-h-48 object-contain" />
+        <Image src={preview} alt="Event" className="mx-auto mb-2 rounded-lg max-h-48 object-contain" />
       ) : (
         <>
           <div className="text-gray-400 mb-2">Drag & drop or click to upload</div>

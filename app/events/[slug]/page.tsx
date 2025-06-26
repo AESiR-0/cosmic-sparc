@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Calendar, MapPin, Ticket } from 'lucide-react';
+import Image from 'next/image';
 
 export default function PublicEventPage() {
   const { slug } = useParams();
@@ -47,7 +48,9 @@ export default function PublicEventPage() {
       {/* Banner Image */}
       {event.image_url && (
         <div className="w-full h-64 md:h-96 bg-gray-200 relative overflow-hidden">
-          <img
+          <Image
+            width={1000}
+            height={1000}
             src={event.image_url}
             alt={event.name}
             className="w-full h-full object-cover object-center"

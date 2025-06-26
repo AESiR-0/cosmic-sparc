@@ -311,7 +311,7 @@ export default function CreateEventPage() {
 
         {/* Help Text */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 mb-2">Tips for creating great events:</h3>
+          <h3 className="text-sm font-medium text-[#006D92] mb-2">Tips for creating great events:</h3>
           <ul className="text-sm text-blue-800 space-y-1">
             <li>• Use a clear, descriptive event name</li>
             <li>• Provide detailed venue information</li>

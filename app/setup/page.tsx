@@ -106,7 +106,7 @@ export default function SetupPage() {
 
             {/* Manual Setup Section */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h3 className="font-semibold text-blue-900 mb-2">📋 Manual Setup Instructions</h3>
+              <h3 className="font-semibold text-[#006D92] mb-2">📋 Manual Setup Instructions</h3>
               <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
                 <li>Go to your Supabase dashboard</li>
                 <li>Navigate to Authentication → Users</li>

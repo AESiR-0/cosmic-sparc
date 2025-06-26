@@ -263,7 +263,7 @@ export default function EditEventPage() {
 
         {/* Event Info */}
         <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 mb-2">Event Information:</h3>
+          <h3 className="text-sm font-medium text-[#006D92] mb-2">Event Information:</h3>
           <ul className="text-sm text-blue-800 space-y-1">
             <li>• Event ID: {event.id}</li>
             <li>• Slug: {event.slug}</li>

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Calendar, MapPin, Ticket } from 'lucide-react';
+import Image from 'next/image';
 import PublicEventRegistrationForm from '@/components/forms/PublicEventRegistrationForm';
 
 export default function EventRegistrationPage() {
@@ -70,8 +71,10 @@ export default function EventRegistrationPage() {
         {/* Event Summary */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8 flex flex-col md:flex-row gap-6 items-center">
           {event.image_url && (
-            <img
+            <Image
               src={event.image_url}
+              width={1000}
+              height={1000}
               alt={event.name}
               className="w-full md:w-48 h-40 object-cover object-center rounded-lg shadow"
             />

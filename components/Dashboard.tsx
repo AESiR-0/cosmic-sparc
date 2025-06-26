@@ -195,7 +195,7 @@ export default function Dashboard() {
                       <div className="flex items-center gap-2">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           event.status === 'active' ? 'bg-green-100 text-green-700' :
-                          event.status === 'upcoming' ? 'bg-blue-100 text-blue-700' :
+                          event.status === 'upcoming' ? 'bg-blue-100 [#006D92]' :
                           'bg-gray-100 text-gray-700'
                         }`}>
                           {event.status}
