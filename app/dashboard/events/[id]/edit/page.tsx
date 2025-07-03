@@ -287,6 +287,16 @@ export default function EditEventPage() {
             <li>• Last Updated: {new Date(event.updated_at).toLocaleDateString()}</li>
           </ul>
         </div>
+
+        <div className="flex justify-end sticky bottom-0 bg-white py-4 z-20 border-t border-gray-100">
+          <Button
+            type="submit"
+            className="bg-[#006D92] hover:bg-[#EF7B45] text-white font-semibold px-6 py-2 rounded-lg shadow"
+            disabled={loading}
+          >
+            {loading ? 'Saving...' : 'Save'}
+          </Button>
+        </div>
       </div>
     </AdminLayout>
   )

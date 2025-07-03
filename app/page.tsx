@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { Event } from '@/lib/types';
-import { Calendar, MapPin, Ticket, Search, Star, Users, Music, Camera, Code, Heart } from 'lucide-react';
+import { Calendar, MapPin, Ticket, Search, Star, Users, Music, Camera, Code, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
 import Image from 'next/image';
+import CategoryBar from '@/components/CategoryBar';
+
 const HERO_IMAGE =
   'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80';
 const PLACEHOLDER_IMAGE =
@@ -42,12 +44,13 @@ const FEATURED_EVENTS = [
 ];
 
 const CATEGORIES = [
-  { name: 'Music', icon: <Music className="w-8 h-8 text-orange-500" />, color: 'bg-orange-100' },
-  { name: 'Tech', icon: <Code className="w-8 h-8 text-blue-600" />, color: 'bg-blue-100' },
-  { name: 'Photography', icon: <Camera className="w-8 h-8 text-orange-400" />, color: 'bg-orange-50' },
-  { name: 'Wellness', icon: <Heart className="w-8 h-8 text-blue-400" />, color: 'bg-blue-50' },
-  { name: 'Business', icon: <Users className="w-8 h-8 [#006D92]" />, color: 'bg-blue-200' },
-  { name: 'Art', icon: <Star className="w-8 h-8 text-orange-700" />, color: 'bg-orange-200' },
+  { name: 'Standups', icon: <Users className="w-8 h-8 text-blue-500" />, color: 'bg-blue-50' },
+  { name: 'Shows', icon: <Star className="w-8 h-8 text-orange-400" />, color: 'bg-orange-50' },
+  { name: 'Concerts', icon: <Music className="w-8 h-8 text-orange-600" />, color: 'bg-orange-100' },
+  { name: 'College Events', icon: <Users className="w-8 h-8 text-blue-700" />, color: 'bg-blue-100' },
+  { name: 'Outing', icon: <MapPin className="w-8 h-8 text-blue-400" />, color: 'bg-blue-50' },
+  { name: 'Techno', icon: <Code className="w-8 h-8 text-blue-700" />, color: 'bg-blue-200' },
+  { name: 'Sufi', icon: <Music className="w-8 h-8 text-orange-700" />, color: 'bg-orange-200' },
 ];
 
 const TESTIMONIALS = [
@@ -73,25 +76,34 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+  const totalSlides = FEATURED_EVENTS.length;
 
   useEffect(() => {
     fetchEvents();
   }, []);
 
   useEffect(() => {
-    if (!search) {
-      setFilteredEvents(events);
-    } else {
-      setFilteredEvents(
-        events.filter(e =>
-          e.name.toLowerCase().includes(search.toLowerCase()) ||
-          e.venue.toLowerCase().includes(search.toLowerCase()) ||
-          (e.description || '').toLowerCase().includes(search.toLowerCase())
-        )
+    let filtered = events;
+    if (search) {
+      filtered = filtered.filter(e =>
+        e.name.toLowerCase().includes(search.toLowerCase()) ||
+        e.venue.toLowerCase().includes(search.toLowerCase()) ||
+        (e.description || '').toLowerCase().includes(search.toLowerCase())
       );
     }
-  }, [search, events]);
+    if (selectedCategory) {
+      filtered = filtered.filter(e => (e.category || '').toLowerCase() === selectedCategory.toLowerCase());
+    }
+    setFilteredEvents(filtered);
+  }, [search, events, selectedCategory]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setCarouselIndex((carouselIndex + 1) % totalSlides), 6000);
+    return () => clearTimeout(timer);
+  }, [carouselIndex, totalSlides]);
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -112,124 +124,79 @@ export default function HomePage() {
     }
   };
 
+  const goToSlide = (idx: number) => setCarouselIndex((idx + totalSlides) % totalSlides);
+
   return (
-    <main className="w-full min-h-screen  px-0 py-0">
-      {/* Hero Section */}
-      <section className="relative py-20 w-full h-[340px] md:h-[420px] flex items-center justify-center bg-[#006D92]">
-        <Image
-          width={1000}
-          height={1000}
-          src={HERO_IMAGE}
-          alt="Events Hero"
-          className="absolute inset-0 w-full h-full object-cover object-center opacity-80"
-        />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#006D92]/80 via-orange-700/40 to-transparent" />
-        <div className="relative z-10 text-center text-white px-4">
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-4 drop-shadow-lg">Discover Amazing Events Near You</h1>
-          <p className="text-lg md:text-2xl mb-6 font-medium drop-shadow">Concerts, workshops, meetups, and more. Find your next experience.</p>
-          {/* Search & Filters */}
-          <section className="max-w-4xl mx-auto px-4  relative z-20">
-            <div className="bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row items-center gap-4 border border-blue-100">
-              <div className="flex-1 w-full flex items-center gap-2">
-                <Search className="w-5 h-5 text-blue-400" />
-                <input
-                  type="text"
-                  placeholder="Search events, venues, or keywords..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  className="w-full border-none outline-none bg-transparent text-lg px-2 text-[#006D92]"
-                />
+    <main className="w-full min-h-screen relative px-0 py-0">
+      {/* CategoryBar below navbar */}
+      <CategoryBar
+        categories={CATEGORIES}
+        selected={selectedCategory}
+        onSelect={setSelectedCategory}
+      />
+      {/* Full-Screen Hero Carousel */}
+      <section className="relative w-full h-[60vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
+        {FEATURED_EVENTS.map((event, idx) => {
+          if (idx !== carouselIndex) return null;
+          const dateObj = event.date ? new Date(event.date) : null;
+          const dateStr = dateObj ? dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+          return (
+            <div key={event.id} className="absolute inset-0 w-full h-full">
+              <Image
+                src={event.image_url}
+                alt={event.name}
+                fill
+                className="object-cover object-center w-full h-full"
+                priority
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-transparent" />
+              <div className="absolute left-0 bottom-0 p-8 max-w-xl text-white z-10">
+                <h1 className="text-3xl md:text-5xl font-extrabold mb-2 drop-shadow">{event.name}</h1>
+                <div className="flex items-center gap-3 text-lg mb-2">
+                  <Calendar className="w-5 h-5 text-orange-400" />
+                  <span>{dateStr}</span>
+                  <MapPin className="w-5 h-5 text-blue-300" />
+                  <span>{event.venue}</span>
+                </div>
+                <div className="flex items-center gap-2 text-orange-300 font-semibold text-lg mb-4">
+                  <Ticket className="w-5 h-5" />
+                  <span>₹{event.ticket_price}</span>
+                </div>
+                <Link
+                  href={`/events/${event.slug}`}
+                  className="inline-block bg-[#FF6F20] hover:bg-[#006D92] text-white font-semibold px-8 py-3 rounded-lg text-lg shadow transition"
+                >
+                  View Event
+                </Link>
               </div>
-              {/* Future: Add category/date filters here */}
             </div>
-          </section>
-          <Link href="#events" className="inline-block mt-10 bg-[#f76e2f] hover:bg-[#006D92] text-white font-semibold px-8 py-3 rounded-lg text-lg shadow transition">Browse Events</Link>
-        </div>
-      </section>
-
-      {/* Categories */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[#006D92] text-center">Popular Categories</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-6">
-          {CATEGORIES.map(cat => (
-            <div key={cat.name} className={`flex flex-col items-center justify-center rounded-xl p-6 shadow bg-white hover:shadow-lg transition border border-blue-100 ${cat.color}`}>
-              {cat.icon}
-              <span className="mt-2 font-semibold text-[#006D92] text-lg">{cat.name}</span>
-            </div>
+          );
+        })}
+        {/* Carousel Arrows */}
+        <button
+          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-blue-100 rounded-full p-2 shadow border border-blue-100 z-20"
+          onClick={() => goToSlide(carouselIndex - 1)}
+          aria-label="Previous slide"
+        >
+          <ChevronLeft className="w-7 h-7 text-[#006D92]" />
+        </button>
+        <button
+          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-blue-100 rounded-full p-2 shadow border border-blue-100 z-20"
+          onClick={() => goToSlide(carouselIndex + 1)}
+          aria-label="Next slide"
+        >
+          <ChevronRight className="w-7 h-7 text-[#006D92]" />
+        </button>
+        {/* Carousel Indicators */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+          {FEATURED_EVENTS.map((_, idx) => (
+            <button
+              key={idx}
+              className={`w-3 h-3 rounded-full ${carouselIndex === idx ? 'bg-[#FF6F20]' : 'bg-white/60'} transition-all`}
+              onClick={() => goToSlide(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
+            />
           ))}
-        </div>
-      </section>
-
-      {/* Featured Events */}
-      <section className="max-w-7xl mx-auto px-4 py-12">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[#006D92] text-center">Featured Events</h2>
-        <div className="flex gap-6 overflow-x-auto pb-2 snap-x">
-          {FEATURED_EVENTS.map(event => {
-            const dateObj = event.date ? new Date(event.date) : null;
-            const dateStr = dateObj ? dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-            return (
-              <div key={event.id} className="min-w-[320px] max-w-xs bg-white rounded-2xl shadow-lg border border-blue-100 flex flex-col overflow-hidden hover:shadow-2xl transition-all snap-center">
-                <div className="h-36 w-full bg-blue-100 overflow-hidden">
-                  <Image
-                    src={event.image_url}
-                    alt={event.name}
-                    width={1000}
-                    height={1000}
-                    className="w-full h-full object-cover object-center"
-                  />
-                </div>
-                <div className="p-4 flex-1 flex flex-col">
-                  <h3 className="text-lg font-bold mb-1 text-[#006D92] line-clamp-1">{event.name}</h3>
-                  <div className="flex items-center gap-2 [#006D92] text-sm mb-1">
-                    <Calendar className="w-4 h-4 text-orange-500" />
-                    <span>{dateStr}</span>
-                  </div>
-                  <div className="flex items-center gap-2 [#006D92] text-sm mb-1">
-                    <MapPin className="w-4 h-4 text-blue-400" />
-                    <span className="line-clamp-1">{event.venue}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-orange-700 font-semibold text-sm mb-2">
-                    <Ticket className="w-4 h-4 text-orange-500" />
-                    <span>₹{event.ticket_price}</span>
-                  </div>
-                  <Link
-                    href={`/events/${event.slug}`}
-                    className="mt-auto inline-block w-full bg-[#006D92] hover:bg-[#EF7B45] text-white font-semibold px-4 py-2 rounded-lg text-center transition"
-                  >
-                    View Event
-                  </Link>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="max-w-5xl mx-auto px-4 py-12">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[#006D92] text-center">How It Works</h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center text-center border border-blue-100">
-            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-orange-100 mb-4">
-              <Search className="w-8 h-8 text-orange-500" />
-            </div>
-            <h3 className="font-bold text-lg mb-2 text-[#006D92]">1. Discover</h3>
-            <p className="text-[#006D92]">Browse and search for events that match your interests, from music to tech and more.</p>
-          </div>
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center text-center border border-blue-100">
-            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-blue-100 mb-4">
-              <Ticket className="w-8 h-8 text-blue-600" />
-            </div>
-            <h3 className="font-bold text-lg mb-2 text-[#006D92]">2. Register</h3>
-            <p className="text-[#006D92]">Sign up for events easily and securely. Get your tickets instantly after registration.</p>
-          </div>
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center text-center border border-blue-100">
-            <div className="w-14 h-14 flex items-center justify-center rounded-full bg-orange-100 mb-4">
-              <Users className="w-8 h-8 text-orange-500" />
-            </div>
-            <h3 className="font-bold text-lg mb-2 text-[#006D92]">3. Attend & Enjoy</h3>
-            <p className="text-[#006D92]">Show your ticket at the event and have a great time! Share your experience with friends.</p>
-          </div>
         </div>
       </section>
 

@@ -211,8 +211,8 @@ export default function CreateEventPage() {
         return
       }
 
-      // Redirect to events list
-      router.push('/dashboard/events')
+      // Redirect to public event view page
+      router.push(`/events/${slug}`)
     } catch (err) {
       console.error('Error creating event:', err)
       alert('Failed to create event. Please try again.')

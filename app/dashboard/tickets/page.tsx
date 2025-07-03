@@ -1,11 +1,37 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import AdminLayout from '@/components/layout/AdminLayout'
 import { Button } from '@/components/ui/button'
 import { Ticket, Plus, Download, Filter } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 export default function TicketsPage() {
+  const [tickets, setTickets] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    fetchTickets()
+  }, [])
+
+  const fetchTickets = async () => {
+    setLoading(true)
+    setError('')
+    try {
+      const { data, error } = await supabase
+        .from('registrations')
+        .select('*, event:events(name, image_url, date, venue)')
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      setTickets(data || [])
+    } catch (err) {
+      setError('Failed to load tickets.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <AdminLayout title="Tickets">
       <div className="space-y-6">
@@ -23,25 +49,6 @@ export default function TicketsPage() {
             <Button variant="outline" className="flex items-center gap-2">
               <Download className="w-4 h-4" />
               Export
-            </Button>
-          </div>
-        </div>
-
-        {/* Coming Soon */}
-        <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
-          <Ticket className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Tickets Management</h2>
-          <p className="text-gray-600 mb-6 max-w-md mx-auto">
-            Track ticket sales, manage registrations, and handle check-ins for your events. 
-            This feature is coming soon!
-          </p>
-          <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Button className="bg-cosmic-blue hover:bg-cosmic-blue/90">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Ticket Type
-            </Button>
-            <Button variant="outline">
-              View Documentation
             </Button>
           </div>
         </div>
@@ -88,6 +95,32 @@ export default function TicketsPage() {
             </div>
           </div>
         </div>
+
+        {loading ? (
+          <div className="text-center py-8">Loading tickets...</div>
+        ) : error ? (
+          <div className="text-center text-red-600 py-8">{error}</div>
+        ) : tickets.length === 0 ? (
+          <div className="text-center text-gray-500 py-8">No tickets found.</div>
+        ) : (
+          <div className="space-y-4">
+            {tickets.map(ticket => (
+              <div key={ticket.id} className="bg-white rounded-lg border p-4 flex items-center gap-4">
+                {ticket.event?.image_url && (
+                  <img src={ticket.event.image_url} alt={ticket.event.name} className="w-20 h-20 object-cover rounded-md" />
+                )}
+                <div className="flex-1">
+                  <div className="font-semibold">{ticket.event?.name || ticket.name}</div>
+                  <div className="text-xs text-gray-500">{ticket.email}</div>
+                  <div className="text-xs text-gray-500">Ticket ID: {ticket.ticket_id}</div>
+                  <div className="text-xs text-gray-500">{ticket.event?.venue}</div>
+                  <div className="text-xs text-gray-500">{ticket.event?.date}</div>
+                </div>
+                <div className="text-xs text-gray-600">{ticket.status}</div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </AdminLayout>
   )

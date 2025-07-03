@@ -106,36 +106,6 @@ export default function EventsPage() {
           </Button>
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="flex-1">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input
-                  type="text"
-                  placeholder="Search events..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cosmic-blue focus:border-transparent"
-                />
-              </div>
-            </div>
-            <div className="sm:w-48">
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cosmic-blue focus:border-transparent"
-              >
-                <option value="all">All Status</option>
-                <option value="draft">Draft</option>
-                <option value="published">Published</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
         {/* Error State */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
@@ -151,43 +121,78 @@ export default function EventsPage() {
           </div>
         )}
 
-        {/* Events Grid */}
-        {filteredEvents.length === 0 ? (
-          <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
-            <div className="text-gray-400 mb-4">
-              <Calendar className="w-12 h-12 mx-auto" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
-            <p className="text-gray-600 mb-4">
-              {searchTerm || statusFilter !== 'all' 
-                ? 'Try adjusting your search or filters'
-                : 'Get started by creating your first event'
-              }
-            </p>
-            {!searchTerm && statusFilter === 'all' && (
-              <Button
-                onClick={() => router.push('/dashboard/events/create')}
-                className="bg-cosmic-blue hover:bg-cosmic-blue/90"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Create Event
-              </Button>
+        <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex-1">
+            {/* Events Grid */}
+            {filteredEvents.length === 0 ? (
+              <div className="bg-white rounded-lg border border-gray-200 p-8 text-center">
+                <div className="text-gray-400 mb-4">
+                  <Calendar className="w-12 h-12 mx-auto" />
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
+                <p className="text-gray-600 mb-4">
+                  {searchTerm || statusFilter !== 'all' 
+                    ? 'Try adjusting your search or filters'
+                    : 'Get started by creating your first event'
+                  }
+                </p>
+                {!searchTerm && statusFilter === 'all' && (
+                  <Button
+                    onClick={() => router.push('/dashboard/events/create')}
+                    className="bg-cosmic-blue hover:bg-cosmic-blue/90"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Create Event
+                  </Button>
+                )}
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredEvents.map(event => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    showActions={true}
+                    onEdit={handleEditEvent}
+                    onDelete={handleDeleteEvent}
+                    onView={handleViewEvent}
+                  />
+                ))}
+              </div>
             )}
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredEvents.map(event => (
-              <EventCard
-                key={event.id}
-                event={event}
-                showActions={true}
-                onEdit={handleEditEvent}
-                onDelete={handleDeleteEvent}
-                onView={handleViewEvent}
-              />
-            ))}
+          <div className="md:w-72 flex-shrink-0">
+            <div className="sticky top-28 space-y-4">
+              {/* Filters */}
+              <div className="bg-white rounded-lg border border-gray-200 p-4">
+                <div className="mb-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <input
+                      type="text"
+                      placeholder="Search events..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cosmic-blue focus:border-transparent"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-cosmic-blue focus:border-transparent"
+                  >
+                    <option value="all">All Status</option>
+                    <option value="draft">Draft</option>
+                    <option value="published">Published</option>
+                    <option value="cancelled">Cancelled</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
-        )}
+        </div>
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

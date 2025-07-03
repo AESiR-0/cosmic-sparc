@@ -22,9 +22,15 @@ export default function AssignTicketeers({ eventId }: AssignTicketeersProps) {
   const fetchTicketeers = async () => {
     setLoading(true);
     setError("");
-    const { data, error } = await eventTicketeerDb.getEventTicketeers(eventId);
-    if (error) setError(error);
-    else setTicketeers(data || []);
+    try {
+      const { data, error } = await eventTicketeerDb.getEventTicketeers(eventId);
+      console.log('Fetch ticketeers:', data, error);
+      if (error) setError(error);
+      else setTicketeers(data || []);
+    } catch (err) {
+      setError('Failed to fetch ticketeers');
+      console.error('FetchTicketeers error:', err);
+    }
     setLoading(false);
   };
 
@@ -33,12 +39,18 @@ export default function AssignTicketeers({ eventId }: AssignTicketeersProps) {
     setLoading(true);
     setError("");
     setSuccess("");
-    const { data, error } = await eventTicketeerDb.assignTicketeer(eventId, email);
-    if (error) setError(error);
-    else {
-      setSuccess("Ticketeer assigned!");
-      setEmail("");
-      fetchTicketeers();
+    try {
+      const { data, error } = await eventTicketeerDb.assignTicketeer(eventId, email);
+      console.log('Assign ticketeer:', data, error);
+      if (error) setError(error);
+      else {
+        setSuccess("Ticketeer assigned!");
+        setEmail("");
+        fetchTicketeers();
+      }
+    } catch (err) {
+      setError('Failed to assign ticketeer');
+      console.error('AssignTicketeer error:', err);
     }
     setLoading(false);
   };

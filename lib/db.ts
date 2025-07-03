@@ -306,6 +306,7 @@ export const eventTicketeerDb = {
         .single();
       
       if (userError && userError.code !== 'PGRST116') {
+        console.error('User fetch error:', userError);
         throw userError;
       }
       
@@ -317,38 +318,45 @@ export const eventTicketeerDb = {
           .select()
           .single();
         
-        if (createError) throw createError;
+        if (createError) {
+          console.error('User creation error:', createError);
+          throw createError;
+        }
         user = newUser;
       }
-      
+      if (!user) {
+        throw new Error('User creation failed');
+      }
       // Check if already assigned
       const { data: existing, error: checkError } = await supabase
         .from('event_ticketeers')
         .select('id')
         .eq('event_id', eventId)
-        .eq('user_id', user!.id)
+        .eq('user_id', user.id)
         .single();
       
       if (existing) {
         return { data: existing, error: null, loading: false };
       }
-      
       // Assign ticketeer
       const { data, error } = await supabase
         .from('event_ticketeers')
         .insert({
           event_id: eventId,
-          user_id: user!.id
+          user_id: user.id
         })
         .select(`
           id,
           user:users(id, email, role)
         `)
         .single();
-      
-      if (error) throw error;
+      if (error) {
+        console.error('Ticketeer assignment error:', error);
+        throw error;
+      }
       return { data, error: null, loading: false };
     } catch (error) {
+      console.error('AssignTicketeer error:', error);
       return { 
         data: null, 
         error: error instanceof Error ? error.message : 'Failed to assign ticketeer', 

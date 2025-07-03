@@ -14,7 +14,9 @@ import {
   Plus,
   BarChart3,
   Ticket,
-  Bell
+  Bell,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react'
 import { userDb } from '@/lib/db'
 import { User } from '@/lib/types'
@@ -28,7 +30,7 @@ interface AdminLayoutProps {
 const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Dashboard' }) => {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  const [sidebarOpen, setSidebarOpen] = useState(true)
   const router = useRouter()
   const pathname = usePathname();
 
@@ -89,12 +91,12 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Dashboard'
   }
 
   const navigation = [
-    { name: 'Dashboard', href: '/dashboard', icon: BarChart3 },
-    { name: 'Events', href: '/dashboard/events', icon: Calendar },
-    { name: 'Create Event', href: '/dashboard/events/create', icon: Plus },
-    { name: 'Tickets', href: '/dashboard/tickets', icon: Ticket },
-    { name: 'Users', href: '/dashboard/users', icon: Users },
-    { name: 'Settings', href: '/dashboard/settings', icon: Settings },
+    { name: 'Dashboard', href: '/dashboard' },
+    { name: 'Events', href: '/dashboard/events' },
+    { name: 'Create Event', href: '/dashboard/events/create' },
+    { name: 'Tickets', href: '/dashboard/tickets' },
+    { name: 'Users', href: '/dashboard/users' },
+    { name: 'Settings', href: '/dashboard/settings' },
   ]
 
   if (loading) {
@@ -113,33 +115,20 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Dashboard'
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="flex min-h-screen">
       {/* Sidebar */}
-      <aside className={`
-        fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0
-        ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-      `}>
-        <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-[#006D92] to-[#e28618] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">CS</span>
-            </div>
-            <span className="font-bold text-xl text-gray-900">Cosmic Sparc</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden"
-          >
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
-
-        <nav className="mt-6 px-3">
+      <aside className={`transition-all duration-300 bg-white border-r border-blue-100 shadow-lg fixed top-0 left-0 h-screen z-30 ${sidebarOpen ? 'w-64' : 'w-16'} overflow-y-auto flex flex-col`}>
+        <button
+          className="p-2 m-2 rounded-full hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400 self-end"
+          aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
+          onClick={() => setSidebarOpen(open => !open)}
+        >
+          {sidebarOpen ? <ChevronLeft className="w-5 h-5 text-[#006D92]" /> : <ChevronRight className="w-5 h-5 text-[#006D92]" />}
+        </button>
+        {/* Sidebar content here, hidden if !sidebarOpen */}
+        <nav className={`${sidebarOpen ? 'block' : 'hidden'} flex-1`}>
           <div className="space-y-1">
             {navigation.map((item) => {
-              const Icon = item.icon
               const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
               return (
                 <Link
@@ -148,10 +137,9 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Dashboard'
                   className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
                     ${isActive ? 'bg-[#006D92] text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
                 >
-                  <Icon className={`w-5 h-5 mr-3 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-500'}`} />
                   {item.name}
                 </Link>
-              )
+              );
             })}
           </div>
         </nav>
@@ -181,8 +169,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Dashboard'
         </div>
       </aside>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col lg:ml-64 min-h-screen">
+      {/* Main content, with left margin for sidebar */}
+      <main className={`flex-1 ml-${sidebarOpen ? '64' : '16'} transition-all duration-300`}>
         {/* Top bar */}
         <div className="sticky top-0 z-30 bg-white border-b border-gray-200">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
@@ -218,7 +206,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Dashboard'
         <main className="p-4 sm:p-6 lg:p-8 flex-1">
           {children}
         </main>
-      </div>
+      </main>
     </div>
   )
 }
