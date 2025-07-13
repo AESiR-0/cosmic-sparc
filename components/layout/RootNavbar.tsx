@@ -91,7 +91,7 @@ export default function RootNavbar({ context = 'public' }: RootNavbarProps) {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-xl font-bold mb-4">Select Your City</h3>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-2 mb-6">
               {CITIES.map(cityOption => (
                 <button
                   key={cityOption}
@@ -109,9 +109,10 @@ export default function RootNavbar({ context = 'public' }: RootNavbarProps) {
                 </button>
               ))}
             </div>
+        
             <button
               onClick={() => setShowLocationModal(false)}
-              className="w-full mt-4 p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+              className="w-full mt-2 p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
             >
               Cancel
             </button>

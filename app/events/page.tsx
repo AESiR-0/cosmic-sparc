@@ -25,6 +25,7 @@ export default function EventsPage() {
       const { data, error } = await supabase
         .from("events")
         .select("*")
+        .eq("status", "published")
         .order("date", { ascending: true });
       if (error) throw error;
       setEvents(data || []);

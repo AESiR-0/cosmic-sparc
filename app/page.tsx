@@ -7,6 +7,7 @@ import { Event } from '@/lib/types';
 import { Calendar, MapPin, Ticket, Search, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
 import Image from 'next/image';
 import RootNavbar from '@/components/layout/RootNavbar';
+import { useRouter } from 'next/navigation';
 
 const HERO_EVENTS = [
   {
@@ -39,19 +40,30 @@ const HERO_EVENTS = [
 ];
 
 const CATEGORIES = [
-  { name: 'Standup Comedy', color: 'bg-purple-50 text-purple-700 border-purple-200' },
-  { name: 'Music Concerts', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
-  { name: 'Technology', color: 'bg-blue-50 text-blue-700 border-blue-200' },
-  { name: 'Business', color: 'bg-orange-50 text-orange-700 border-orange-200' },
-  { name: 'Sports', color: 'bg-red-50 text-red-700 border-red-200' },
-  { name: 'Arts & Culture', color: 'bg-pink-50 text-pink-700 border-pink-200' },
-  { name: 'Food & Drink', color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
-  { name: 'Education', color: 'bg-green-50 text-green-700 border-green-200' },
+  { name: 'Standup Comedy', color: 'from-purple-500 to-pink-500' },
+  { name: 'Music Concerts', color: 'from-indigo-500 to-blue-500' },
+  { name: 'Technology', color: 'from-blue-500 to-cyan-500' },
+  { name: 'Business', color: 'from-orange-400 to-yellow-500' },
+  { name: 'Sports', color: 'from-green-500 to-emerald-500' },
+  { name: 'Arts & Culture', color: 'from-pink-500 to-red-400' },
+  { name: 'Food & Drink', color: 'from-yellow-400 to-orange-400' },
+  { name: 'Education', color: 'from-teal-500 to-blue-400' },
 ];
 
 const CITIES = [
-  'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 
+  'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai',
   'Kolkata', 'Pune', 'Ahmedabad', 'Jaipur', 'Surat'
+];
+
+const CATEGORY_COLORS = [
+  'bg-purple-600', // Standup Comedy
+  'bg-indigo-600', // Music Concerts
+  'bg-blue-600',   // Technology
+  'bg-orange-500', // Business
+  'bg-green-600',  // Sports
+  'bg-pink-500',   // Arts & Culture
+  'bg-yellow-500', // Food & Drink
+  'bg-teal-600',   // Education
 ];
 
 export default function HomePage() {
@@ -64,6 +76,7 @@ export default function HomePage() {
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [carouselIndex, setCarouselIndex] = useState(0);
   const [showLocationModal, setShowLocationModal] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     fetchEvents();
@@ -113,23 +126,34 @@ export default function HomePage() {
     <>
       <RootNavbar context="public" />
       <main className="w-full min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-orange-50/30">
-        {/* Location Bar */}
-        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-16 z-30">
-          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <button 
-                onClick={() => setShowLocationModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-[#006D92]/10 text-[#006D92] rounded-lg hover:bg-[#006D92]/20 transition"
-              >
-                <MapPin className="w-4 h-4" />
-                <span className="font-medium">{selectedCity}</span>
-              </button>
-              <span className="text-gray-600">•</span>
-              <span className="text-sm text-gray-600">Discover amazing events in your city</span>
+        {/* Category Bar (transparent, brand blue border/text) */}
+        <div className="w-full">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center">
+            {/* Left 4 categories */}
+            <div className="flex gap-2">
+              {CATEGORIES.slice(0, 4).map((category, idx) => (
+                <Link
+                  key={category.name}
+                  href={`/events?category=${encodeURIComponent(category.name)}`}
+                  className={`px-4 py-2 rounded-full border border-[#006D92] text-[#006D92] font-semibold text-sm bg-transparent hover:bg-[#006D92]/10 hover:border-[#006D92] transition whitespace-nowrap`}
+                >
+                  {category.name}
+                </Link>
+              ))}
             </div>
-            <div className="flex items-center gap-2">
-              <Filter className="w-4 h-4 text-gray-400" />
-              <span className="text-sm text-gray-600">Filter</span>
+            {/* Spacer */}
+            <div className="flex-1" />
+            {/* Right 4 categories */}
+            <div className="flex gap-2">
+              {CATEGORIES.slice(4, 8).map((category, idx) => (
+                <Link
+                  key={category.name}
+                  href={`/events?category=${encodeURIComponent(category.name)}`}
+                  className={`px-4 py-2 rounded-full border border-[#006D92] text-[#006D92] font-semibold text-sm bg-transparent hover:bg-[#006D92]/10 hover:border-[#006D92] transition whitespace-nowrap`}
+                >
+                  {category.name}
+                </Link>
+              ))}
             </div>
           </div>
         </div>
@@ -213,28 +237,41 @@ export default function HomePage() {
             {HERO_EVENTS.map((_, idx) => (
               <button
                 key={idx}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  carouselIndex === idx ? 'bg-white' : 'bg-white/40'
-                }`}
+                className={`w-3 h-3 rounded-full transition-all ${carouselIndex === idx ? 'bg-white' : 'bg-white/40'
+                  }`}
                 onClick={() => goToSlide(idx)}
               />
             ))}
           </div>
         </section>
 
-        {/* Search Bar */}
-        <section className="bg-white border-b border-gray-200">
-          <div className="max-w-4xl mx-auto px-4 py-6">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        {/* Prominent Search Bar below Hero */}
+        <section className="w-full">
+          <div className="max-w-2xl mx-auto -mt-12 relative z-10">
+            <form
+              className="relative shadow-lg rounded-2xl bg-white"
+              onSubmit={e => {
+                e.preventDefault();
+                if (search.trim()) {
+                  router.push(`/events?search=${encodeURIComponent(search.trim())}`);
+                }
+              }}
+            >
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#006D92]" />
               <input
                 type="text"
                 placeholder="Search for events, artists, or venues..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006D92] focus:border-transparent text-lg"
+                className="w-full pl-12 pr-16 py-4 rounded-2xl border border-gray-200 text-lg focus:outline-none focus:ring-2 focus:ring-[#006D92] focus:border-transparent"
               />
-            </div>
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 -translate-y-1/2 px-4 py-2 rounded-xl bg-[#006D92] text-white font-semibold hover:bg-[#005a7a] transition"
+              >
+                Search
+              </button>
+            </form>
           </div>
         </section>
 
@@ -265,7 +302,7 @@ export default function HomePage() {
           ) : error ? (
             <div className="text-center py-12">
               <div className="text-red-600 mb-4">{error}</div>
-              <button 
+              <button
                 onClick={fetchEvents}
                 className="px-4 py-2 bg-[#006D92] text-white rounded-lg hover:bg-[#005a7a]"
               >
@@ -276,18 +313,18 @@ export default function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredEvents.map(event => {
                 const dateObj = new Date(event.date);
-                const dateStr = dateObj.toLocaleDateString('en-IN', { 
-                  month: 'short', 
-                  day: 'numeric' 
+                const dateStr = dateObj.toLocaleDateString('en-IN', {
+                  month: 'short',
+                  day: 'numeric'
                 });
-                const timeStr = dateObj.toLocaleTimeString('en-IN', { 
-                  hour: '2-digit', 
-                  minute: '2-digit' 
+                const timeStr = dateObj.toLocaleTimeString('en-IN', {
+                  hour: '2-digit',
+                  minute: '2-digit'
                 });
-                
+
                 return (
-                  <Link 
-                    key={event.id} 
+                  <Link
+                    key={event.id}
                     href={`/events/${event.slug}`}
                     className="group bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
                   >
@@ -328,7 +365,7 @@ export default function HomePage() {
           {!loading && filteredEvents.length === 0 && (
             <div className="text-center py-12">
               <div className="text-gray-500 text-lg mb-4">No events found</div>
-              <button 
+              <button
                 onClick={() => setSelectedCategory(null)}
                 className="px-4 py-2 bg-[#006D92] text-white rounded-lg hover:bg-[#005a7a]"
               >
@@ -342,8 +379,7 @@ export default function HomePage() {
         {showLocationModal && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
             <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
-              <h3 className="text-xl font-bold mb-4">Select Your City & Category</h3>
-              
+              <h3 className="text-xl font-bold mb-4">Select Your City</h3>
               {/* Cities Section */}
               <div className="mb-6">
                 <h4 className="font-semibold text-gray-900 mb-3">Choose Your City</h4>
@@ -352,38 +388,16 @@ export default function HomePage() {
                     <button
                       key={city}
                       onClick={() => setSelectedCity(city)}
-                      className={`p-3 rounded-lg border text-left transition ${
-                        selectedCity === city 
-                          ? 'bg-[#006D92]/10 border-[#006D92] text-[#006D92]' 
-                          : 'border-gray-200 hover:bg-gray-50'
-                      }`}
+                      className={`p-3 rounded-lg border text-left transition ${selectedCity === city
+                        ? 'bg-[#006D92]/10 border-[#006D92] text-[#006D92]'
+                        : 'border-gray-200 hover:bg-gray-50'
+                        }`}
                     >
                       {city}
                     </button>
                   ))}
                 </div>
               </div>
-
-              {/* Categories Section */}
-              <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-3">Filter by Category</h4>
-                <div className="grid grid-cols-2 gap-2">
-                  {CATEGORIES.map(category => (
-                    <button
-                      key={category.name}
-                      onClick={() => setSelectedCategory(selectedCategory === category.name ? null : category.name)}
-                      className={`p-3 rounded-lg border text-left transition ${
-                        selectedCategory === category.name 
-                          ? `${category.color} border-current` 
-                          : 'border-gray-200 hover:bg-gray-50'
-                      }`}
-                    >
-                      {category.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               <div className="flex gap-3">
                 <button
                   onClick={() => {
@@ -391,16 +405,15 @@ export default function HomePage() {
                   }}
                   className="flex-1 p-3 bg-[#006D92] text-white rounded-lg hover:bg-[#005a7a] font-medium"
                 >
-                  Apply Filters
+                  Apply
                 </button>
                 <button
                   onClick={() => {
-                    setSelectedCategory(null);
                     setShowLocationModal(false);
                   }}
                   className="flex-1 p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
                 >
-                  Clear All
+                  Cancel
                 </button>
               </div>
             </div>
