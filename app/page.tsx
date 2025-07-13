@@ -4,71 +4,54 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { Event } from '@/lib/types';
-import { Calendar, MapPin, Ticket, Search, Star, Users, Music, Camera, Code, Heart, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, MapPin, Ticket, Search, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
 import Image from 'next/image';
-import CategoryBar from '@/components/CategoryBar';
+import RootNavbar from '@/components/layout/RootNavbar';
 
-const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1200&q=80';
-const PLACEHOLDER_IMAGE =
-  'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80';
-
-const FEATURED_EVENTS = [
+const HERO_EVENTS = [
   {
-    id: 'f1',
-    name: 'Tech Innovators Summit',
-    date: '2024-07-10T18:00:00Z',
-    venue: 'Grand Hall, City Center',
-    image_url: 'https://images.unsplash.com/photo-1515168833906-d2a3b82b3029?auto=format&fit=crop&w=600&q=80',
-    ticket_price: 499,
-    slug: 'tech-innovators-summit',
+    id: 'h1',
+    name: 'Tech Innovators Summit 2025',
+    date: '2025-07-10T18:00:00Z',
+    venue: 'Grand Hall, Mumbai',
+    image_url: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80',
+    ticket_price: 1499,
+    slug: 'tech-innovators-summit-2025',
   },
   {
-    id: 'f2',
-    name: 'Summer Music Fest',
-    date: '2024-08-05T19:00:00Z',
-    venue: 'Open Air Arena',
-    image_url: 'https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=600&q=80',
-    ticket_price: 799,
-    slug: 'summer-music-fest',
+    id: 'h2',
+    name: 'Summer Music Festival',
+    date: '2025-08-05T19:00:00Z',
+    venue: 'Open Air Arena, Delhi',
+    image_url: 'https://images.unsplash.com/photo-1507874457470-272b3c8d8ee2?auto=format&fit=crop&w=1200&q=80',
+    ticket_price: 2499,
+    slug: 'summer-music-festival',
   },
   {
-    id: 'f3',
+    id: 'h3',
     name: 'Startup Pitch Night',
-    date: '2024-09-15T17:00:00Z',
-    venue: 'Innovation Hub',
-    image_url: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=600&q=80',
-    ticket_price: 299,
+    date: '2025-09-15T17:00:00Z',
+    venue: 'Innovation Hub, Bangalore',
+    image_url: 'https://images.unsplash.com/photo-1465101046530-73398c7f28ca?auto=format&fit=crop&w=1200&q=80',
+    ticket_price: 999,
     slug: 'startup-pitch-night',
   },
 ];
 
 const CATEGORIES = [
-  { name: 'Standups', icon: <Users className="w-8 h-8 text-blue-500" />, color: 'bg-blue-50' },
-  { name: 'Shows', icon: <Star className="w-8 h-8 text-orange-400" />, color: 'bg-orange-50' },
-  { name: 'Concerts', icon: <Music className="w-8 h-8 text-orange-600" />, color: 'bg-orange-100' },
-  { name: 'College Events', icon: <Users className="w-8 h-8 text-blue-700" />, color: 'bg-blue-100' },
-  { name: 'Outing', icon: <MapPin className="w-8 h-8 text-blue-400" />, color: 'bg-blue-50' },
-  { name: 'Techno', icon: <Code className="w-8 h-8 text-blue-700" />, color: 'bg-blue-200' },
-  { name: 'Sufi', icon: <Music className="w-8 h-8 text-orange-700" />, color: 'bg-orange-200' },
+  { name: 'Standup Comedy', color: 'bg-purple-50 text-purple-700 border-purple-200' },
+  { name: 'Music Concerts', color: 'bg-indigo-50 text-indigo-700 border-indigo-200' },
+  { name: 'Technology', color: 'bg-blue-50 text-blue-700 border-blue-200' },
+  { name: 'Business', color: 'bg-orange-50 text-orange-700 border-orange-200' },
+  { name: 'Sports', color: 'bg-red-50 text-red-700 border-red-200' },
+  { name: 'Arts & Culture', color: 'bg-pink-50 text-pink-700 border-pink-200' },
+  { name: 'Food & Drink', color: 'bg-yellow-50 text-yellow-700 border-yellow-200' },
+  { name: 'Education', color: 'bg-green-50 text-green-700 border-green-200' },
 ];
 
-const TESTIMONIALS = [
-  {
-    name: 'Priya Sharma',
-    quote: 'I found my favorite concert here! The ticketing process was seamless and the event was unforgettable.',
-    avatar: 'https://randomuser.me/api/portraits/women/68.jpg',
-  },
-  {
-    name: 'Rahul Verma',
-    quote: 'As an organizer, I love how easy it is to list and manage my events. Highly recommended!',
-    avatar: 'https://randomuser.me/api/portraits/men/32.jpg',
-  },
-  {
-    name: 'Aisha Khan',
-    quote: 'The discover page is vibrant and makes it easy to find events that match my interests.',
-    avatar: 'https://randomuser.me/api/portraits/women/44.jpg',
-  },
+const CITIES = [
+  'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 
+  'Kolkata', 'Pune', 'Ahmedabad', 'Jaipur', 'Surat'
 ];
 
 export default function HomePage() {
@@ -77,9 +60,10 @@ export default function HomePage() {
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCity, setSelectedCity] = useState<string>('Mumbai');
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [carouselIndex, setCarouselIndex] = useState(0);
-  const totalSlides = FEATURED_EVENTS.length;
+  const [showLocationModal, setShowLocationModal] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -90,8 +74,7 @@ export default function HomePage() {
     if (search) {
       filtered = filtered.filter(e =>
         e.name.toLowerCase().includes(search.toLowerCase()) ||
-        e.venue.toLowerCase().includes(search.toLowerCase()) ||
-        (e.description || '').toLowerCase().includes(search.toLowerCase())
+        e.venue.toLowerCase().includes(search.toLowerCase())
       );
     }
     if (selectedCategory) {
@@ -101,9 +84,9 @@ export default function HomePage() {
   }, [search, events, selectedCategory]);
 
   useEffect(() => {
-    const timer = setTimeout(() => setCarouselIndex((carouselIndex + 1) % totalSlides), 6000);
+    const timer = setTimeout(() => setCarouselIndex((carouselIndex + 1) % HERO_EVENTS.length), 5000);
     return () => clearTimeout(timer);
-  }, [carouselIndex, totalSlides]);
+  }, [carouselIndex]);
 
   const fetchEvents = async () => {
     setLoading(true);
@@ -124,156 +107,306 @@ export default function HomePage() {
     }
   };
 
-  const goToSlide = (idx: number) => setCarouselIndex((idx + totalSlides) % totalSlides);
+  const goToSlide = (idx: number) => setCarouselIndex((idx + HERO_EVENTS.length) % HERO_EVENTS.length);
 
   return (
-    <main className="w-full min-h-screen relative px-0 py-0">
-      {/* CategoryBar below navbar */}
-      <CategoryBar
-        categories={CATEGORIES}
-        selected={selectedCategory}
-        onSelect={setSelectedCategory}
-      />
-      {/* Full-Screen Hero Carousel */}
-      <section className="relative w-full h-[60vh] md:h-[80vh] flex items-center justify-center overflow-hidden">
-        {FEATURED_EVENTS.map((event, idx) => {
-          if (idx !== carouselIndex) return null;
-          const dateObj = event.date ? new Date(event.date) : null;
-          const dateStr = dateObj ? dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-          return (
-            <div key={event.id} className="absolute inset-0 w-full h-full">
-              <Image
-                src={event.image_url}
-                alt={event.name}
-                fill
-                className="object-cover object-center w-full h-full"
-                priority
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 to-transparent" />
-              <div className="absolute left-0 bottom-0 p-8 max-w-xl text-white z-10">
-                <h1 className="text-3xl md:text-5xl font-extrabold mb-2 drop-shadow">{event.name}</h1>
-                <div className="flex items-center gap-3 text-lg mb-2">
-                  <Calendar className="w-5 h-5 text-orange-400" />
-                  <span>{dateStr}</span>
-                  <MapPin className="w-5 h-5 text-blue-300" />
-                  <span>{event.venue}</span>
-                </div>
-                <div className="flex items-center gap-2 text-orange-300 font-semibold text-lg mb-4">
-                  <Ticket className="w-5 h-5" />
-                  <span>₹{event.ticket_price}</span>
-                </div>
-                <Link
-                  href={`/events/${event.slug}`}
-                  className="inline-block bg-[#FF6F20] hover:bg-[#006D92] text-white font-semibold px-8 py-3 rounded-lg text-lg shadow transition"
-                >
-                  View Event
-                </Link>
-              </div>
+    <>
+      <RootNavbar context="public" />
+      <main className="w-full min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-orange-50/30">
+        {/* Location Bar */}
+        <div className="bg-white/80 backdrop-blur-sm border-b border-gray-200 sticky top-16 z-30">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <button 
+                onClick={() => setShowLocationModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-[#006D92]/10 text-[#006D92] rounded-lg hover:bg-[#006D92]/20 transition"
+              >
+                <MapPin className="w-4 h-4" />
+                <span className="font-medium">{selectedCity}</span>
+              </button>
+              <span className="text-gray-600">•</span>
+              <span className="text-sm text-gray-600">Discover amazing events in your city</span>
             </div>
-          );
-        })}
-        {/* Carousel Arrows */}
-        <button
-          className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-blue-100 rounded-full p-2 shadow border border-blue-100 z-20"
-          onClick={() => goToSlide(carouselIndex - 1)}
-          aria-label="Previous slide"
-        >
-          <ChevronLeft className="w-7 h-7 text-[#006D92]" />
-        </button>
-        <button
-          className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-blue-100 rounded-full p-2 shadow border border-blue-100 z-20"
-          onClick={() => goToSlide(carouselIndex + 1)}
-          aria-label="Next slide"
-        >
-          <ChevronRight className="w-7 h-7 text-[#006D92]" />
-        </button>
-        {/* Carousel Indicators */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
-          {FEATURED_EVENTS.map((_, idx) => (
-            <button
-              key={idx}
-              className={`w-3 h-3 rounded-full ${carouselIndex === idx ? 'bg-[#FF6F20]' : 'bg-white/60'} transition-all`}
-              onClick={() => goToSlide(idx)}
-              aria-label={`Go to slide ${idx + 1}`}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="max-w-5xl mx-auto px-4 py-12">
-        <h2 className="text-2xl md:text-3xl font-bold mb-6 text-[#006D92] text-center">What Our Users Say</h2>
-        <div className="grid md:grid-cols-3 gap-8">
-          {TESTIMONIALS.map(t => (
-            <div key={t.name} className="bg-white rounded-xl shadow p-6 flex flex-col items-center text-center border border-blue-100">
-              <Image src={t.avatar} alt={t.name} width={1000} height={1000} className="w-16 h-16 rounded-full mb-3 object-cover border-2 border-orange-200" />
-              <p className="text-[#006D92] italic mb-2">"{t.quote}"</p>
-              <span className="font-semibold text-[#006D92]">{t.name}</span>
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-gray-400" />
+              <span className="text-sm text-gray-600">Filter</span>
             </div>
-          ))}
+          </div>
         </div>
-      </section>
 
-      {/* Events Grid */}
-      <section id="events" className="max-w-7xl mx-auto px-4 py-16">
-        <h2 className="text-3xl font-bold mb-8 text-center text-[#006D92]">Upcoming Events</h2>
-        {loading && <div className="text-center [#006D92]">Loading events...</div>}
-        {error && <div className="text-center text-orange-700">{error}</div>}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-          {filteredEvents.map(event => {
-            const dateObj = event.date ? new Date(event.date) : null;
-            const dateStr = dateObj ? dateObj.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : '';
-            const timeStr = dateObj ? dateObj.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' }) : '';
+        {/* Hero Carousel */}
+        <section className="relative w-full h-[70vh] overflow-hidden">
+          {HERO_EVENTS.map((event, idx) => {
+            if (idx !== carouselIndex) return null;
+            const dateObj = new Date(event.date);
+            const dateStr = dateObj.toLocaleDateString('en-IN', { 
+              weekday: 'long', 
+              month: 'long', 
+              day: 'numeric', 
+              year: 'numeric' 
+            });
+            const timeStr = dateObj.toLocaleTimeString('en-IN', { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            });
+            
             return (
-              <div key={event.id} className="bg-white rounded-2xl shadow-lg border border-blue-100 flex flex-col overflow-hidden hover:shadow-2xl transition-all">
-                <div className="h-40 w-full bg-blue-100 overflow-hidden">
-                  <Image
-                    src={event.image_url || PLACEHOLDER_IMAGE}
-                    alt={event.name}
-                    width={1000}
-                    height={1000}
-                    className="w-full h-full object-cover object-center transition-transform duration-300 hover:scale-105"
-                  />
-                </div>
-                <div className="p-5 flex-1 flex flex-col">
-                  <h3 className="text-xl font-bold mb-1 text-[#006D92] line-clamp-1">{event.name}</h3>
-                  <div className="flex items-center gap-2 text-[#006D92] text-sm mb-1">
-                    <Calendar className="w-4 h-4 text-orange-500" />
-                    <span>{dateStr} {timeStr && `• ${timeStr}`}</span>
+              <div key={event.id} className="absolute inset-0 w-full h-full">
+                <Image
+                  src={event.image_url}
+                  alt={event.name}
+                  fill
+                  className="object-cover object-center"
+                  priority
+                />
+                <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+                <div className="absolute left-0 top-0 w-full h-full flex items-center">
+                  <div className="max-w-2xl ml-16 text-white">
+                    <h1 className="text-5xl md:text-6xl font-bold mb-4 leading-tight">{event.name}</h1>
+                    <div className="flex items-center gap-6 text-xl mb-6">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="w-5 h-5" />
+                        <span>{dateStr}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-5 h-5" />
+                        <span>{event.venue}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 mb-8">
+                      <div className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-lg">
+                        <span className="text-2xl font-bold">₹{event.ticket_price}</span>
+                        <span className="text-sm ml-1">per ticket</span>
+                      </div>
+                      <div className="text-sm text-gray-300">
+                        {timeStr} • {event.venue}
+                      </div>
+                    </div>
+                    <Link
+                      href={`/events/${event.slug}`}
+                      className="inline-block bg-gradient-to-r from-[#006D92] to-[#e28618] text-white font-bold px-8 py-4 rounded-lg text-lg hover:from-[#005a7a] hover:to-[#d17a15] transition"
+                    >
+                      Book Now
+                    </Link>
                   </div>
-                  <div className="flex items-center gap-2 text-[#006D92] text-sm mb-1">
-                    <MapPin className="w-4 h-4 text-[#006D92]" />
-                    <span className="line-clamp-1">{event.venue}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-orange-700 font-semibold text-sm mb-2">
-                    <Ticket className="w-4 h-4 text-orange-500" />
-                    <span>₹{event.ticket_price}</span>
-                  </div>
-                  <p className="text-[#006D92] text-sm mb-4 line-clamp-2 flex-1">{event.description}</p>
-                  <Link
-                    href={`/events/${event.slug}`}
-                    className="mt-auto inline-block w-full bg-[#006D92] hover:bg-[#EF7B45] text-white font-semibold px-4 py-2 rounded-lg text-center transition"
-                  >
-                    View Event
-                  </Link>
                 </div>
               </div>
             );
           })}
-        </div>
-        {!loading && filteredEvents.length === 0 && (
-          <div className="text-center text-[#006D92] mt-12">No events found.</div>
-        )}
-      </section>
+          
+          {/* Carousel Controls */}
+          <button
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full p-3 transition"
+            onClick={() => goToSlide(carouselIndex - 1)}
+          >
+            <ChevronLeft className="w-6 h-6 text-white" />
+          </button>
+          <button
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full p-3 transition"
+            onClick={() => goToSlide(carouselIndex + 1)}
+          >
+            <ChevronRight className="w-6 h-6 text-white" />
+          </button>
+          
+          {/* Carousel Indicators */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+            {HERO_EVENTS.map((_, idx) => (
+              <button
+                key={idx}
+                className={`w-3 h-3 rounded-full transition-all ${
+                  carouselIndex === idx ? 'bg-white' : 'bg-white/40'
+                }`}
+                onClick={() => goToSlide(idx)}
+              />
+            ))}
+          </div>
+        </section>
 
-      {/* Call to Action */}
-      <section className="w-full  bg-gradient-to-br from-[#006D92] via-[#BDEDE0] to-[#E28618]  py-16 mt-8">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Ready to create your own event?</h2>
-          <p className="text-lg text-white mb-6">Join hundreds of organizers using Cosmic Sparc to host amazing experiences.</p>
-          <Link href="/dashboard/events/create" className="inline-block bg-white text-[#006D92] hover:bg-orange-100 font-semibold px-8 py-3 rounded-lg text-lg shadow transition">Create Event</Link>
-        </div>
-      </section>
-    </main>
+        {/* Search Bar */}
+        <section className="bg-white border-b border-gray-200">
+          <div className="max-w-4xl mx-auto px-4 py-6">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search for events, artists, or venues..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#006D92] focus:border-transparent text-lg"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Events Grid */}
+        <section className="max-w-7xl mx-auto px-4 py-12">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-3xl font-bold text-gray-900">
+              {selectedCategory ? `${selectedCategory} Events` : 'Popular Events'}
+            </h2>
+            <span className="text-gray-600">
+              {filteredEvents.length} events found
+            </span>
+          </div>
+
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden animate-pulse">
+                  <div className="h-48 bg-gray-200" />
+                  <div className="p-4 space-y-3">
+                    <div className="h-4 bg-gray-200 rounded w-3/4" />
+                    <div className="h-3 bg-gray-200 rounded w-1/2" />
+                    <div className="h-3 bg-gray-200 rounded w-2/3" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <div className="text-red-600 mb-4">{error}</div>
+              <button 
+                onClick={fetchEvents}
+                className="px-4 py-2 bg-[#006D92] text-white rounded-lg hover:bg-[#005a7a]"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {filteredEvents.map(event => {
+                const dateObj = new Date(event.date);
+                const dateStr = dateObj.toLocaleDateString('en-IN', { 
+                  month: 'short', 
+                  day: 'numeric' 
+                });
+                const timeStr = dateObj.toLocaleTimeString('en-IN', { 
+                  hour: '2-digit', 
+                  minute: '2-digit' 
+                });
+                
+                return (
+                  <Link 
+                    key={event.id} 
+                    href={`/events/${event.slug}`}
+                    className="group bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-lg transition-all"
+                  >
+                    <div className="relative h-48 overflow-hidden">
+                      <Image
+                        src={event.image_url || 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80'}
+                        alt={event.name}
+                        width={400}
+                        height={300}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute top-3 left-3 bg-black/70 text-white px-2 py-1 rounded text-sm font-medium">
+                        {dateStr}
+                      </div>
+                      <div className="absolute top-3 right-3 bg-white/90 text-gray-900 px-2 py-1 rounded text-sm font-bold">
+                        ₹{event.ticket_price}
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#006D92] transition">
+                        {event.name}
+                      </h3>
+                      <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
+                        <MapPin className="w-4 h-4" />
+                        <span className="line-clamp-1">{event.venue}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm text-gray-500">
+                        <Calendar className="w-4 h-4" />
+                        <span>{dateStr} • {timeStr}</span>
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+
+          {!loading && filteredEvents.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-500 text-lg mb-4">No events found</div>
+              <button 
+                onClick={() => setSelectedCategory(null)}
+                className="px-4 py-2 bg-[#006D92] text-white rounded-lg hover:bg-[#005a7a]"
+              >
+                View All Events
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* Location & Category Modal */}
+        {showLocationModal && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto">
+              <h3 className="text-xl font-bold mb-4">Select Your City & Category</h3>
+              
+              {/* Cities Section */}
+              <div className="mb-6">
+                <h4 className="font-semibold text-gray-900 mb-3">Choose Your City</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {CITIES.map(city => (
+                    <button
+                      key={city}
+                      onClick={() => setSelectedCity(city)}
+                      className={`p-3 rounded-lg border text-left transition ${
+                        selectedCity === city 
+                          ? 'bg-[#006D92]/10 border-[#006D92] text-[#006D92]' 
+                          : 'border-gray-200 hover:bg-gray-50'
+                      }`}
+                    >
+                      {city}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Categories Section */}
+              <div className="mb-6">
+                <h4 className="font-semibold text-gray-900 mb-3">Filter by Category</h4>
+                <div className="grid grid-cols-2 gap-2">
+                  {CATEGORIES.map(category => (
+                    <button
+                      key={category.name}
+                      onClick={() => setSelectedCategory(selectedCategory === category.name ? null : category.name)}
+                      className={`p-3 rounded-lg border text-left transition ${
+                        selectedCategory === category.name 
+                          ? `${category.color} border-current` 
+                          : 'border-gray-200 hover:bg-gray-50'
+                      }`}
+                    >
+                      {category.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setShowLocationModal(false);
+                  }}
+                  className="flex-1 p-3 bg-[#006D92] text-white rounded-lg hover:bg-[#005a7a] font-medium"
+                >
+                  Apply Filters
+                </button>
+                <button
+                  onClick={() => {
+                    setSelectedCategory(null);
+                    setShowLocationModal(false);
+                  }}
+                  className="flex-1 p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                >
+                  Clear All
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </>
   );
 }
