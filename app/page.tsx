@@ -159,7 +159,7 @@ export default function HomePage() {
         </div>
 
         {/* Hero Carousel */}
-        <section className="relative w-full h-[70vh] overflow-hidden">
+        <section className="relative w-full h-[45vh] overflow-hidden">
           {HERO_EVENTS.map((event, idx) => {
             if (idx !== carouselIndex) return null;
             const dateObj = new Date(event.date);
