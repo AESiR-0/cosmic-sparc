@@ -185,6 +185,27 @@ export default function CreateEventPage() {
         alert('You must be logged in to create an event')
         return
       }
+      if (!user.email_confirmed_at) {
+        alert('Please verify your email before creating an event.');
+        setLoading(false);
+        return;
+      }
+      // Fetch user profile from users table
+      const { data: userProfile, error: userProfileError } = await supabase
+        .from('users')
+        .select('phone, address')
+        .eq('id', user.id)
+        .single();
+      if (userProfileError) {
+        alert('Could not fetch your profile. Please try again.');
+        setLoading(false);
+        return;
+      }
+      if (!userProfile.phone || !userProfile.address) {
+        alert('Please fill out your phone number and address in your profile before creating an event.');
+        setLoading(false);
+        return;
+      }
 
       // Generate slug from name
       const slug = generateSlug(formData.name)

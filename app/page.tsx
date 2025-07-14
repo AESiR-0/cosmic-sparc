@@ -128,14 +128,14 @@ export default function HomePage() {
       <main className="w-full min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-orange-50/30">
         {/* Category Bar (transparent, brand blue border/text) */}
         <div className="w-full">
-          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center">
+          <div className="max-w-7xl font-sans mx-auto px-4 py-3 flex items-center">
             {/* Left 4 categories */}
             <div className="flex gap-2">
               {CATEGORIES.slice(0, 4).map((category, idx) => (
                 <Link
                   key={category.name}
                   href={`/events?category=${encodeURIComponent(category.name)}`}
-                  className={`px-4 py-2 rounded-full border border-[#006D92] text-[#006D92] font-semibold text-sm bg-transparent hover:bg-[#006D92]/10 hover:border-[#006D92] transition whitespace-nowrap`}
+                  className={`px-4 py-2 rounded-full  text-[#006D92] font-semibold text-sm bg-transparent  transition whitespace-nowrap`}
                 >
                   {category.name}
                 </Link>
@@ -149,7 +149,7 @@ export default function HomePage() {
                 <Link
                   key={category.name}
                   href={`/events?category=${encodeURIComponent(category.name)}`}
-                  className={`px-4 py-2 rounded-full border border-[#006D92] text-[#006D92] font-semibold text-sm bg-transparent hover:bg-[#006D92]/10 hover:border-[#006D92] transition whitespace-nowrap`}
+                  className={`px-4 py-2 rounded-full  text-[#006D92] font-semibold text-sm bg-transparent  transition whitespace-nowrap`}
                 >
                   {category.name}
                 </Link>
@@ -163,17 +163,17 @@ export default function HomePage() {
           {HERO_EVENTS.map((event, idx) => {
             if (idx !== carouselIndex) return null;
             const dateObj = new Date(event.date);
-            const dateStr = dateObj.toLocaleDateString('en-IN', { 
-              weekday: 'long', 
-              month: 'long', 
-              day: 'numeric', 
-              year: 'numeric' 
+            const dateStr = dateObj.toLocaleDateString('en-IN', {
+              weekday: 'long',
+              month: 'long',
+              day: 'numeric',
+              year: 'numeric'
             });
-            const timeStr = dateObj.toLocaleTimeString('en-IN', { 
-              hour: '2-digit', 
-              minute: '2-digit' 
+            const timeStr = dateObj.toLocaleTimeString('en-IN', {
+              hour: '2-digit',
+              minute: '2-digit'
             });
-            
+
             return (
               <div key={event.id} className="absolute inset-0 w-full h-full">
                 <Image
@@ -217,7 +217,7 @@ export default function HomePage() {
               </div>
             );
           })}
-          
+
           {/* Carousel Controls */}
           <button
             className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-sm hover:bg-white/30 rounded-full p-3 transition"
@@ -231,7 +231,7 @@ export default function HomePage() {
           >
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
-          
+
           {/* Carousel Indicators */}
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
             {HERO_EVENTS.map((_, idx) => (

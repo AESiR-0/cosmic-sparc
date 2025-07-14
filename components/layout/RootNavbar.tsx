@@ -11,7 +11,7 @@ interface RootNavbarProps {
 }
 
 const CITIES = [
-  'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 
+  'Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai',
   'Kolkata', 'Pune', 'Ahmedabad', 'Jaipur', 'Surat'
 ];
 
@@ -53,8 +53,8 @@ export default function RootNavbar({ context = 'public' }: RootNavbarProps) {
           {/* Right: Location & User */}
           <div className="flex items-center gap-4">
             {/* Location Selector */}
-            <button 
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#006D92]/10 hover:bg-[#006D92]/20 border border-[#006D92]/20 text-[#006D92] text-sm font-medium transition" 
+            <button
+              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-[#006D92]/10 hover:bg-[#006D92]/20 border border-[#006D92]/20 text-[#006D92] text-sm font-medium transition"
               onClick={() => setShowLocationModal(true)}
             >
               <MapPin className="w-4 h-4" />
@@ -68,9 +68,7 @@ export default function RootNavbar({ context = 'public' }: RootNavbarProps) {
                   <User className="w-4 h-4" />
                   {user.email?.split('@')[0]}
                 </Link>
-                <Button variant="ghost" size="icon" onClick={signOut} className="text-gray-400 hover:text-gray-600">
-                  <LogOut className="w-4 h-4" />
-                </Button>
+
               </div>
             ) : (
               <div className="flex items-center gap-2">
@@ -99,17 +97,16 @@ export default function RootNavbar({ context = 'public' }: RootNavbarProps) {
                     setCity && setCity(cityOption);
                     setShowLocationModal(false);
                   }}
-                  className={`p-3 rounded-lg border text-left transition ${
-                    city === cityOption 
-                      ? 'bg-[#006D92]/10 border-[#006D92] text-[#006D92]' 
+                  className={`p-3 rounded-lg border text-left transition ${city === cityOption
+                      ? 'bg-[#006D92]/10 border-[#006D92] text-[#006D92]'
                       : 'border-gray-200 hover:bg-gray-50'
-                  }`}
+                    }`}
                 >
                   {cityOption}
                 </button>
               ))}
             </div>
-        
+
             <button
               onClick={() => setShowLocationModal(false)}
               className="w-full mt-2 p-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"

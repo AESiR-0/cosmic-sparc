@@ -27,61 +27,6 @@ export default function HomePage() {
 
   return (
     <main className="w-full min-h-screen bg-gradient-to-br from-white via-blue-50/30 to-orange-50/30">
-      {/* Navigation */}
-      <nav className="w-full border-b border-gray-100 bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-[#006D92] to-[#e28618] rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">CS</span>
-            </div>
-            <span className="font-bold text-xl text-gray-900">Cosmic Sparc</span>
-          </Link>
-          
-          <div className="hidden md:flex items-center gap-6">
-            <Link href="/" className="text-gray-600 hover:text-gray-900 transition-colors">Discover</Link>
-            <Link href="/dashboard/events/create" className="text-gray-600 hover:text-gray-900 transition-colors">Create Event</Link>
-            <Link href="/pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Pricing</Link>
-            <Link href="/setup" className="text-gray-600 hover:text-gray-900 transition-colors">Setup</Link>
-            <Link href="/login">
-              <Button variant="outline" className="border-gray-300">Sign In</Button>
-            </Link>
-            <Link href="/signup">
-              <Button className="bg-[#006D92] hover:bg-[#e28618]">Get Started</Button>
-            </Link>
-          </div>
-
-          {/* Mobile menu button */}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden"
-          >
-            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-          </Button>
-        </div>
-
-        {/* Mobile menu */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-gray-200 bg-white">
-            <div className="px-4 py-4 space-y-4">
-              <Link href="/" className="block text-gray-600 hover:text-gray-900 transition-colors">Discover</Link>
-              <Link href="/dashboard/events/create" className="block text-gray-600 hover:text-gray-900 transition-colors">Create Event</Link>
-              <Link href="/pricing" className="block text-gray-600 hover:text-gray-900 transition-colors">Pricing</Link>
-              <Link href="/setup" className="block text-gray-600 hover:text-gray-900 transition-colors">Setup</Link>
-              <div className="flex flex-col gap-2 pt-4">
-                <Link href="/login">
-                  <Button variant="outline" className="w-full border-gray-300">Sign In</Button>
-                </Link>
-                <Link href="/signup">
-                  <Button className="w-full bg-[#006D92] hover:bg-[#e28618]">Get Started</Button>
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
-      </nav>
-
       {/* Hero Section with Search */}
       <section className="w-full max-w-7xl mx-auto px-4 py-16">
         <div className="text-center mb-12">

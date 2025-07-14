@@ -5,16 +5,32 @@ interface ImageUploadProps {
   value?: string;
   onUpload: (url: string) => void;
   bucket?: string;
+  altString?: string;
   folder?: string;
+  prevUrl?: string; // URL of the previous image to delete
+  onDelete?: () => void; // Callback after deletion
+  width?: number; // Optional width for preview
+  height?: number; // Optional height for preview
 }
 
 const DEFAULT_BUCKET = 'event-images';
 
-const ImageUpload: React.FC<ImageUploadProps> = ({ value, onUpload, bucket = DEFAULT_BUCKET, folder = '' }) => {
+const ImageUpload: React.FC<ImageUploadProps> = ({ value, onUpload, bucket = DEFAULT_BUCKET, folder = '', prevUrl, onDelete, altString, width = 1000, height = 1000 }) => {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [preview, setPreview] = useState<string | null>(value || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleDeletePrev = async () => {
+    if (prevUrl) {
+      // Extract path after the bucket name
+      const match = prevUrl.match(/(?:profiles|event-images)\/(.*)$/);
+      if (match && match[1]) {
+        await supabase.storage.from(bucket).remove([match[1]]);
+        if (onDelete) onDelete();
+      }
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -22,6 +38,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onUpload, bucket = DEF
     setError('');
     setUploading(true);
     try {
+      // Delete previous image if exists
+      await handleDeletePrev();
       // Generate a unique filename
       const fileExt = file.name.split('.').pop();
       const fileName = `${folder}${Date.now()}-${Math.random().toString(36).substr(2, 8)}.${fileExt}`;
@@ -58,7 +76,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ value, onUpload, bucket = DEF
       onDragOver={e => e.preventDefault()}
     >
       {preview ? (
-        <Image src={preview} alt="Event" width={1000} height={1000} className="mx-auto mb-2 rounded-lg max-h-48 object-contain" />
+        <Image src={preview} alt={altString || "Event"} width={width} height={height} className="mx-auto mb-2 rounded-lg max-h-48 object-contain" />
       ) : (
         <>
           <div className="text-gray-400 mb-2">Drag & drop or click to upload</div>

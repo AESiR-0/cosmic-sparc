@@ -21,6 +21,7 @@ import {
 import { userDb } from '@/lib/db'
 import { User } from '@/lib/types'
 import { supabase } from '@/lib/supabase'
+import DashboardSidebar from './DashboardSidebar';
 
 interface AdminLayoutProps {
   children: React.ReactNode
@@ -90,15 +91,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Dashboard'
     router.push('/logout');
   }
 
-  const navigation = [
-    { name: 'Dashboard', href: '/dashboard' },
-    { name: 'Events', href: '/dashboard/events' },
-    { name: 'Create Event', href: '/dashboard/events/create' },
-    { name: 'Tickets', href: '/dashboard/tickets' },
-    { name: 'Users', href: '/dashboard/users' },
-    { name: 'Settings', href: '/dashboard/settings' },
-  ]
-
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -117,77 +109,27 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Dashboard'
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <aside className={`transition-all duration-300 bg-white border-r border-blue-100 shadow-lg fixed top-0 left-0 h-screen z-30 ${sidebarOpen ? 'w-64' : 'w-16'} overflow-y-auto flex flex-col`}>
-        <button
-          className="p-2 m-2 rounded-full hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400 self-end"
-          aria-label={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
-          onClick={() => setSidebarOpen(open => !open)}
-        >
-          {sidebarOpen ? <ChevronLeft className="w-5 h-5 text-[#006D92]" /> : <ChevronRight className="w-5 h-5 text-[#006D92]" />}
-        </button>
-        {/* Sidebar content here, hidden if !sidebarOpen */}
-        <nav className={`${sidebarOpen ? 'block' : 'hidden'} flex-1`}>
-          <div className="space-y-1">
-            {navigation.map((item) => {
-              const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
-              return (
-                <Link
-                  key={item.name}
-                  href={item.href}
-                  className={`group flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
-                    ${isActive ? 'bg-[#006D92] text-white' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'}`}
-                >
-                  {item.name}
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
-
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#006D92] to-[#e28618] rounded-full flex items-center justify-center">
-                <span className="text-white font-bold text-sm">
-                  {user.email.charAt(0).toUpperCase()}
-                </span>
-              </div>
-              <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700">{user.role === 'admin' ? 'Admin' : user.role === 'ticketeer' ? 'Event Creator' : 'User'}</p>
-                <p className="text-xs text-gray-500 truncate">{user.email}</p>
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={handleSignOut}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        </div>
-      </aside>
-
+      <DashboardSidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       {/* Main content, with left margin for sidebar */}
-      <main className={`flex-1 ml-${sidebarOpen ? '64' : '16'} transition-all duration-300`}>
+      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-16'}`}>
         {/* Top bar */}
         <div className="sticky top-0 z-30 bg-white border-b border-gray-200">
           <div className="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
             <div className="flex items-center">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSidebarOpen(true)}
-                className="lg:hidden"
-              >
-                <Menu className="w-5 h-5" />
-              </Button>
+              {/* Hamburger always visible when sidebar is collapsed */}
+              {!sidebarOpen && (
+                <button
+                  className="p-2 rounded-full hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  aria-label="Expand sidebar"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <Menu className="w-5 h-5 text-[#006D92]" />
+                </button>
+              )}
               <h1 className="text-xl font-semibold text-gray-900 ml-4 lg:ml-0">
                 {title}
               </h1>
             </div>
-            
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon">
                 <Bell className="w-5 h-5" />
@@ -201,12 +143,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = ({ children, title = 'Dashboard'
             </div>
           </div>
         </div>
-
         {/* Page content */}
         <main className="p-4 sm:p-6 lg:p-8 flex-1">
           {children}
         </main>
-      </main>
+      </div>
     </div>
   )
 }

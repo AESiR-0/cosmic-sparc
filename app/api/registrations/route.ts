@@ -8,6 +8,21 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { eventId, userId, name, email, phone, formData } = body;
     const ticketId = uuidv4();
+    // Check for duplicate registration
+    if (userId) {
+      const { data: existing, error: dupError } = await supabase
+        .from('registrations')
+        .select('id')
+        .eq('event_id', eventId)
+        .eq('user_id', userId)
+        .single();
+      if (existing) {
+        return NextResponse.json({ error: 'You are already registered for this event.' }, { status: 400 });
+      }
+      if (dupError && dupError.code !== 'PGRST116') {
+        return NextResponse.json({ error: dupError.message }, { status: 400 });
+      }
+    }
     // TODO: Generate QR code for ticketId
     const { data, error } = await supabase
       .from('registrations')
